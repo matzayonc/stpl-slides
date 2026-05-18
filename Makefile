@@ -1,7 +1,6 @@
 PRES_DIR   = presentations
 BUILD_DIR  = build
 DIST_DIR   = dist
-SLIDES_DIR = $(DIST_DIR)/slides
 
 SOURCES := $(wildcard $(PRES_DIR)/*.tex)
 PDFS    := $(patsubst $(PRES_DIR)/%.tex,$(DIST_DIR)/%.pdf,$(SOURCES))
@@ -9,7 +8,7 @@ PDFS    := $(patsubst $(PRES_DIR)/%.tex,$(DIST_DIR)/%.pdf,$(SOURCES))
 # Default presentation for single-target commands (override with PRES=name)
 PRES ?= $(basename $(notdir $(firstword $(SOURCES))))
 
-.PHONY: all open clean slides convert pptx
+.PHONY: all open clean pptx
 
 all: $(PDFS)
 
@@ -20,20 +19,34 @@ $(DIST_DIR)/%.pdf: $(PRES_DIR)/%.tex preamble.tex
 open: $(DIST_DIR)/$(PRES).pdf
 	xdg-open $<
 
-# Convert each slide to a PNG for Google Slides import
-slides: $(DIST_DIR)/$(PRES).pdf
-	mkdir -p $(SLIDES_DIR)/$(PRES)
-	pdftocairo -png -r 150 $< $(SLIDES_DIR)/$(PRES)/slide
-
 # Convert to PPTX via LibreOffice (best Google Slides compatibility)
 pptx: $(DIST_DIR)/$(PRES).pdf
 	libreoffice --headless --infilter="impress_pdf_import" --convert-to pptx --outdir $(DIST_DIR) $<
 
-# Flatten fonts/transparency for Google Slides PDF import
-convert: $(DIST_DIR)/$(PRES).pdf
-	gs -dBATCH -dNOPAUSE -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 \
-		-sOutputFile=$(DIST_DIR)/$(PRES)-compat.pdf $<
-
 clean:
 	latexmk -C $(SOURCES)
 	rm -rf $(BUILD_DIR) $(DIST_DIR)
+
+# Build all presentations whose filename contains the given filter, e.g. make 2
+# Also supports make pptx-2, make slides-2, make open-2, make convert-2
+define filter_pdfs
+$(shell ls $(PRES_DIR)/*$(1)*.tex 2>/dev/null | sed 's|$(PRES_DIR)/|$(DIST_DIR)/|g; s|\.tex|.pdf|g')
+endef
+
+%:
+	@pdfs="$(call filter_pdfs,$@)"; \
+	test -n "$$pdfs" || { echo "No presentations matching '$@'"; exit 1; }; \
+	$(MAKE) $$pdfs
+
+pptx-%:
+	@pdfs="$(call filter_pdfs,$*)"; \
+	test -n "$$pdfs" || { echo "No presentations matching '$*'"; exit 1; }; \
+	for pdf in $$pdfs; do \
+	  $(MAKE) $$pdf && \
+	  libreoffice --headless --infilter="impress_pdf_import" --convert-to pptx --outdir $(DIST_DIR) $$pdf; \
+	done
+
+open-%:
+	@pdfs="$(call filter_pdfs,$*)"; \
+	test -n "$$pdfs" || { echo "No presentations matching '$*'"; exit 1; }; \
+	for pdf in $$pdfs; do $(MAKE) $$pdf && xdg-open $$pdf; done

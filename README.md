@@ -6,43 +6,56 @@ LaTeX beamer presentation setup.
 
 - `texlive-meta` (or any TeX Live distribution with `beamer` and `texlive-fontsextra`)
 - `latexmk`
-- `libreoffice` (optional, for PPTX/Google Slides export)
-- `poppler` (optional, for per-slide PNG export)
+- `libreoffice` (optional, for PPTX export)
 
 On Manjaro/Arch:
 
 ```bash
-sudo pacman -S texlive-meta latexmk libreoffice-fresh poppler
+sudo pacman -S texlive-meta latexmk libreoffice-fresh
 ```
 
 ## Usage
 
 ```bash
-make        # build and open PDF
-make clean  # remove build artifacts
+make            # build all presentations → dist/*.pdf
+make open       # open default presentation (first alphabetically)
+make clean      # remove build artifacts
 ```
 
-Output: `build/presentation.pdf`
+### Filter by name
+
+Any token that is not a named target is treated as a filename filter — all presentations whose filename contains that string are built:
+
+```bash
+make 2          # build all files matching *2* → dist/2_defi.pdf, …
+make pptx-2     # build + convert to PPTX for files matching *2*
+make open-2     # build + open files matching *2*
+```
+
+### Single presentation
+
+Override the default with `PRES=`:
+
+```bash
+make open PRES=1_intro
+make pptx PRES=2_defi
+```
+
+Output PDFs go to `dist/`, PPTX files alongside them.
 
 ## Google Slides export
 
-Google Slides does not reliably import Beamer-generated PDFs. Two options are provided:
-
-**PPTX (recommended)** — converts the PDF to a `.pptx` file via LibreOffice, which Google Slides imports natively:
+Convert a PDF to `.pptx` via LibreOffice, then upload to Google Drive or use **File → Import slides** in Google Slides:
 
 ```bash
-make pptx
+make pptx           # default presentation
+make pptx-2         # all presentations matching *2*
+make pptx PRES=name # specific presentation
 ```
 
-Output: `build/presentation.pptx` — upload to Google Drive or use **File → Import slides** in Google Slides.
+## Adding presentations
 
-**PNG slides** — exports each slide as a PNG image (150 dpi) via `pdftocairo`:
-
-```bash
-make slides
-```
-
-Output: `build/slides/slide-01.png`, `slide-02.png`, … — import via **File → Import slides → Upload** in Google Slides.
+Create a new `.tex` file in `presentations/` using `\input{preamble}`. It will be picked up automatically by `make all` and the filter targets.
 
 ## Font
 

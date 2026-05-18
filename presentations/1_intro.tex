@@ -1,8 +1,11 @@
 \input{preamble}
 
-\title{Presentation Title}
-\subtitle{Subtitle here}
-\author{Author Name}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+\title{Wstęp do Solany}
+\subtitle{Solana Bootcamp}
+\author{}
 \institute{Superteam Poland}
 \date{\today}
 
@@ -12,53 +15,125 @@
   \titlepage
 \end{frame}
 
-\begin{frame}{Outline}
+\begin{frame}{Plan}
   \tableofcontents
 \end{frame}
 
-\section{Introduction}
+% ----------------------------------------------------------------
+\section{Czym jest Solana?}
 
-\begin{frame}{Introduction}
+\begin{frame}{Czym jest Solana?}
   \begin{itemize}
-    \item First point
-    \item Second point
-    \item Third point
+    \item Blockchain wysokiej wydajności --- 50\,000+ TPS
+    \item Proof of History (PoH) + Proof of Stake (PoS)
+    \item Niskie opłaty transakcyjne (\textless{} \$0.001)
+    \item Rosnący ekosystem: DeFi, NFT, dApps
   \end{itemize}
 \end{frame}
 
-\section{Content}
+% ----------------------------------------------------------------
+\section{Czym jest Rust?}
 
-\begin{frame}{A slide with blocks}
-  \begin{block}{Key Idea}
-    This is a highlighted block.
+\begin{frame}{Czym jest Rust?}
+  \begin{itemize}
+    \item Język systemowy: bezpieczeństwo pamięci bez GC
+    \item Gwarancje kompilacyjne: brak race conditions
+    \item Główny język programów on-chain na Solanie
+    \item Narzędzia: \texttt{rustup}, \texttt{cargo}, \texttt{clippy}
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------------
+\section{Jak budować?}
+
+\begin{frame}{Jak budować?}
+  \begin{block}{Frameworki}
+    \begin{itemize}
+      \item \textbf{Anchor} --- wysokopoziomowy DSL, generuje IDL
+      \item \textbf{Native / Pinocchio} --- pełna kontrola, minimalny overhead
+    \end{itemize}
   \end{block}
-
-  \begin{alertblock}{Warning}
-    This is an alert block.
-  \end{alertblock}
-
-  \begin{exampleblock}{Example}
-    This is an example block.
+  \vspace{0.4cm}
+  \begin{exampleblock}{Narzędzia}
+    \texttt{solana-cli}, \texttt{anchor-cli}, \texttt{solana-test-validator}
   \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Two columns}
+% ----------------------------------------------------------------
+\section{Co z danymi?}
+
+\begin{frame}{Co z danymi?}
+  \begin{itemize}
+    \item Wszystko jest \textbf{kontem} (\emph{account})
+    \item Dane przechowywane w polach konta (do 10 MB)
+    \item Rent --- opłata za zajmowanie przestrzeni
+    \item PDAs --- deterministyczne adresy dla programów
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------------
+\section{A logowanie?}
+
+\begin{frame}{A logowanie?}
+  \begin{itemize}
+    \item \texttt{msg!("...")} --- prosty log w programie Rust
+    \item \texttt{solana logs} --- podgląd logów w CLI
+    \item Explorer: \texttt{explorer.solana.com} lub \texttt{solscan.io}
+    \item Events w Anchor --- strukturalne logi dla klientów
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------------
+\section{Czym jest dApp?}
+
+\begin{frame}{Czym jest dApp?}
   \begin{columns}
     \column{0.5\textwidth}
-      Left column content here.
+      \textbf{Tradycyjna aplikacja}
+      \begin{itemize}
+        \item Centralny serwer
+        \item Baza danych pod kontrolą dostawcy
+        \item Zaufanie do operatora
+      \end{itemize}
 
     \column{0.5\textwidth}
-      Right column content here.
+      \textbf{dApp}
+      \begin{itemize}
+        \item Logika on-chain (program)
+        \item Dane w koncie blockchain
+        \item Bezaufaniowe wykonanie
+      \end{itemize}
   \end{columns}
 \end{frame}
 
-\section{Conclusion}
-
-\begin{frame}{Conclusion}
+\begin{frame}{Decentralized Finance}
   \begin{itemize}
-    \item Summary point one
-    \item Summary point two
+    \item DEX-y: Raydium, Orca, Jupiter Aggregator
+    \item Lending: Kamino, Marginfi
+    \item Stablecoins: USDC, USDT, PayPal USD
+    \item Łączna wartość zablokowana (TVL): \textgreater{} \$5 mld
   \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------------
+\section{Co dalej?}
+
+\begin{frame}{Co dalej?}
+  \begin{itemize}
+    \item Zainstaluj Rust + Solana CLI + Anchor
+    \item Uruchom lokalny validator: \texttt{solana-test-validator}
+    \item Napisz pierwszy program --- \texttt{hello\_world}
+    \item Dołącz do Superteam Poland i buduj!
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------------
+\begin{frame}[plain]
+  \begin{center}
+    \vfill
+    {\Huge\bfseries\color{stplwhite} gn}
+    \vfill
+  \end{center}
 \end{frame}
 
 \end{document}
