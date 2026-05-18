@@ -1,0 +1,166 @@
+\documentclass{beamer}
+
+\usepackage{Archivo}
+\renewcommand{\sfdefault}{\rmdefault}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\usepackage[most]{tcolorbox}
+
+%% ---- Superteam Poland brand colors ----
+\definecolor{stpldark}{HTML}{0B0E0F}   % near-black background
+\definecolor{stplcard}{HTML}{161A1B}   % card / block surface
+\definecolor{stplborder}{HTML}{1E2526}  % subtle track color for progress bar
+\definecolor{stplred}{HTML}{DC143C}    % brand crimson red
+\definecolor{stplwhite}{HTML}{FFFFFF}  % white
+\definecolor{stplmuted}{HTML}{8A9BA8}  % muted / secondary text
+
+\usetheme{default}
+\setbeamersize{text margin left=0.85cm, text margin right=0.85cm}
+
+%% ---- Background & base text ----
+\setbeamercolor{background canvas}{bg=stpldark}
+\setbeamercolor{normal text}{fg=stplwhite, bg=stpldark}
+\usebeamercolor{normal text}
+
+%% ---- Structure ----
+\setbeamercolor{structure}{fg=stplred}
+
+%% ---- Title slide metadata ----
+\setbeamercolor{title}{fg=stplwhite}
+\setbeamercolor{subtitle}{fg=stplred}
+\setbeamercolor{author}{fg=stplwhite}
+\setbeamercolor{institute}{fg=stplmuted}
+\setbeamercolor{date}{fg=stplmuted}
+
+%% ---- Frame title: flat, no box background ----
+\setbeamercolor{frametitle}{fg=stplwhite, bg=stpldark}
+\setbeamerfont{frametitle}{size=\large, series=\bfseries}
+\setbeamertemplate{frametitle}{%
+  \vspace{0.35cm}%
+  \insertframetitle\par
+  \nointerlineskip\vspace{0.18cm}%
+  {\color{stplred}\rule{2.2cm}{1.5pt}}%
+}
+
+%% ---- Progress bar at top of every slide ----
+\addtobeamertemplate{background}{}{%
+  \begin{tikzpicture}[remember picture, overlay]
+    % track
+    \fill[stplborder]
+      (current page.north west) rectangle
+      ([yshift=-2.5pt]current page.north east);
+    % filled portion
+    \pgfmathsetmacro{\stplprog}{\insertframenumber/\inserttotalframenumber}
+    \fill[stplred]
+      (current page.north west) rectangle
+      ($(current page.north west)+(\stplprog\paperwidth,-2.5pt)$);
+  \end{tikzpicture}%
+}
+
+%% ---- Bullet items ----
+\setbeamercolor{itemize item}{fg=stplred}
+\setbeamercolor{itemize subitem}{fg=stplmuted}
+\setbeamercolor{itemize subsubitem}{fg=stplmuted}
+\setbeamertemplate{itemize item}{\bfseries\textendash}
+\setbeamertemplate{itemize subitem}{\small\textendash}
+\setbeamercolor{enumerate item}{fg=stplred}
+\setbeamercolor{enumerate subitem}{fg=stplmuted}
+
+%% ---- Blocks (flat left-accent via tcolorbox) ----
+\tcbset{
+  stplbase/.style={
+    enhanced, breakable,
+    colback=stplcard, coltext=stplwhite,
+    coltitle=stplwhite, fonttitle=\bfseries,
+    boxrule=0pt, leftrule=3pt,
+    arc=0pt, outer arc=0pt,
+    top=5pt, bottom=5pt, left=7pt, right=7pt,
+    toptitle=4pt, bottomtitle=4pt,
+    titlerule=0pt,
+  },
+}
+\renewenvironment{block}[1]{%
+  \begin{tcolorbox}[stplbase, colframe=stplred, title={#1}]%
+}{%
+  \end{tcolorbox}%
+}
+\renewenvironment{alertblock}[1]{%
+  \begin{tcolorbox}[stplbase, colframe=stplred!75!black,
+    colback=stplred!10!stplcard, title={#1}]%
+}{%
+  \end{tcolorbox}%
+}
+\renewenvironment{exampleblock}[1]{%
+  \begin{tcolorbox}[stplbase, colframe=stplmuted, title={#1}]%
+}{%
+  \end{tcolorbox}%
+}
+
+%% ---- Table of contents ----
+\setbeamercolor{section in toc}{fg=stplwhite}
+\setbeamercolor{subsection in toc}{fg=stplmuted}
+\setbeamertemplate{section in toc}{%
+  {\color{stplred}\textbf{\textendash}}\hspace{0.5em}\inserttocsection%
+}
+
+%% ---- Footline: minimal ----
+\setbeamertemplate{footline}{%
+  \begin{beamercolorbox}[wd=\paperwidth, ht=0pt, dp=0.55cm]{normal text}%
+    \hspace{0.85cm}%
+    \includegraphics[height=1.6ex]{images/stpl-logo.png}%
+    \hfill%
+    \textcolor{stplmuted}{\tiny\insertframenumber\,/\,\inserttotalframenumber}%
+    \hspace{0.85cm}%
+  \end{beamercolorbox}%
+}
+\setbeamertemplate{navigation symbols}{}
+
+%% ---- Section divider slides ----
+\AtBeginSection[]{%
+  \begin{frame}[plain]
+    \begin{tikzpicture}[remember picture, overlay]
+      \fill[stpldark] (current page.south west) rectangle (current page.north east);
+      \fill[stplred, opacity=0.07]
+        ([xshift=-2.5cm]current page.east) circle (5.5cm);
+      \fill[stplred]
+        (current page.north west) rectangle ([xshift=5pt]current page.south west);
+    \end{tikzpicture}%
+    \vfill
+    \hspace{0.1\paperwidth}%
+    \begin{minipage}{0.8\paperwidth}
+      \textcolor{stplmuted}{\small Section \thesection}\\[0.35cm]
+      {\color{stplwhite}\LARGE\bfseries\insertsectionhead}\\[0.25cm]
+      {\color{stplred}\rule{3cm}{1.5pt}}
+    \end{minipage}%
+    \vfill
+  \end{frame}%
+}
+
+%% ---- Title page ----
+\setbeamertemplate{title page}{%
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[stplred]
+      (current page.north west) rectangle ([xshift=5pt]current page.south west);
+    \fill[stplred, opacity=0.07]
+      ([xshift=-3cm,yshift=3cm]current page.north east) circle (5.5cm);
+    \fill[stplred, opacity=0.04]
+      ([yshift=-1.5cm]current page.south east) circle (3.5cm);
+  \end{tikzpicture}%
+  \vfill
+  \hspace{0.08\paperwidth}%
+  \begin{minipage}{0.85\paperwidth}
+    \includegraphics[width=3cm]{images/stpl-logo.png}\par
+    \vspace{0.8cm}
+    {\usebeamerfont{title}\usebeamercolor[fg]{title}\inserttitle}\par
+    \vspace{0.2cm}
+    {\color{stplred}\rule{3cm}{1.5pt}}\par
+    \vspace{0.3cm}
+    {\usebeamerfont{subtitle}\usebeamercolor[fg]{subtitle}\insertsubtitle}\par
+    \vspace{0.65cm}
+    {\usebeamerfont{author}\usebeamercolor[fg]{author}\insertauthor}\par
+    \vspace{0.12cm}
+    {\small\textcolor{stplmuted}{\insertinstitute\enspace·\enspace\insertdate}}
+  \end{minipage}%
+  \vfill
+}

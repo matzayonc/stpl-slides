@@ -1,8 +1,11 @@
 # Use pdflatex engine
 $pdf_mode = 1;
 
-# Output directory for build artifacts
-$out_dir = 'build';
+# Intermediate build artifacts
+$aux_dir = 'build';
 
-# Main file (no extension)
-@default_files = ('presentation.tex');
+# Final PDFs
+$out_dir = 'dist';
+
+# Add repo root to TeX search path so presentations/ files can find preamble.tex
+ensure_path('TEXINPUTS', './');

@@ -1,0 +1,78 @@
+# Superteam Poland — Presentation Branding
+
+## Colors
+
+| Role | Name | Hex |
+|---|---|---|
+| Background | `stpldark` | `#0B0E0F` |
+| Card / block surface | `stplcard` | `#161A1B` |
+| Progress bar track | `stplborder` | `#1E2526` |
+| Brand accent | `stplred` | `#DC143C` |
+| Primary text | `stplwhite` | `#FFFFFF` |
+| Secondary / muted text | `stplmuted` | `#8A9BA8` |
+
+## Logo
+
+File: `images/stpl-logo.png` (white text + red semicircle, transparent background)
+
+- Title slide: `width=3cm`, above the title
+- Footline: `height=1.6ex`, left-aligned
+
+## Layout
+
+- Beamer theme: `default` (no built-in theme chrome)
+- Text margins: `0.85cm` left and right
+- Navigation symbols: hidden
+
+## Frame Title
+
+- Bold white text, no background box
+- Short `2.2cm × 1.5pt` red rule below the title
+- Top padding: `0.35cm`
+
+## Progress Bar
+
+- Position: very top of every slide
+- Track: `stplborder`, filled portion: `stplred`
+- Height: `2.5pt`
+- Fills proportionally to `frame / totalframes`
+
+## Title Slide
+
+- Left edge: `5pt` solid red vertical bar (full height)
+- Top-right + bottom-right: red radial glows at 7% and 4% opacity
+- Content order: logo → title → `3cm` red rule → subtitle → author → `institute · date` (muted)
+
+## Section Divider Slides (auto, `\AtBeginSection`)
+
+- Full dark background with right-side red radial glow (7% opacity)
+- Left edge: `5pt` solid red vertical bar
+- Content: muted "Section N" label → large bold section name → `3cm` red rule
+
+## Blocks
+
+Implemented via `tcolorbox` (flat, no rounded corners):
+
+| Block type | Left border | Background |
+|---|---|---|
+| `block` | `stplred` | `stplcard` |
+| `alertblock` | `stplred!75!black` | `stplred!10!stplcard` |
+| `exampleblock` | `stplmuted` | `stplcard` |
+
+All block titles: bold white. No box rule, no shadow.
+
+## Bullet Points
+
+- Item marker: bold em-dash (`–`), color `stplred`
+- Sub-item marker: small em-dash, color `stplmuted`
+
+## Table of Contents
+
+- Entry format: red `–` + section name
+- Subsections: `stplmuted`
+
+## Footline
+
+- No background
+- Left: logo
+- Right: `n / total` page count in tiny `stplmuted` text
