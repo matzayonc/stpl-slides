@@ -23,6 +23,30 @@
 \setbeamercolor{normal text}{fg=stplwhite, bg=stpldark}
 \usebeamercolor{normal text}
 
+%% ---- Background image helpers ----
+\newcommand{\stpldefaultbg}{%
+  \setbeamertemplate{background}{%
+    \begin{tikzpicture}[remember picture, overlay]
+      \node[at=(current page.center), inner sep=0pt] {%
+        \includegraphics[width=\paperwidth,height=\paperheight]{images/bg-default.png}%
+      };
+      \fill[stplborder]
+        (current page.north west) rectangle
+        ([yshift=-2.5pt]current page.north east);
+      \pgfmathsetmacro{\stplprog}{\insertframenumber/\inserttotalframenumber}
+      \fill[stplred]
+        (current page.north west) rectangle
+        ($(current page.north west)+(\stplprog\paperwidth,-2.5pt)$);
+    \end{tikzpicture}%
+  }%
+}
+\newcommand{\stplherobg}{%
+  \setbeamertemplate{background}{%
+    \includegraphics[width=\paperwidth,height=\paperheight]{images/bg-hero.png}%
+  }%
+}
+\stpldefaultbg
+
 %% ---- Structure ----
 \setbeamercolor{structure}{fg=stplred}
 
@@ -34,29 +58,19 @@
 \setbeamercolor{date}{fg=stplmuted}
 
 %% ---- Frame title: flat, no box background ----
-\setbeamercolor{frametitle}{fg=stplwhite, bg=stpldark}
+\setbeamercolor{frametitle}{fg=stplwhite, bg=}
 \setbeamerfont{frametitle}{size=\large, series=\bfseries}
 \setbeamertemplate{frametitle}{%
   \vspace{0.35cm}%
-  \insertframetitle\par
+  {\centering\insertframetitle\par}%
   \nointerlineskip\vspace{0.18cm}%
-  {\color{stplred}\rule{2.2cm}{1.5pt}}%
+  \hfil{\color{stplred}\rule{2.2cm}{1.5pt}}\hfil\par%
 }
 
-%% ---- Progress bar at top of every slide ----
-\addtobeamertemplate{background}{}{%
-  \begin{tikzpicture}[remember picture, overlay]
-    % track
-    \fill[stplborder]
-      (current page.north west) rectangle
-      ([yshift=-2.5pt]current page.north east);
-    % filled portion
-    \pgfmathsetmacro{\stplprog}{\insertframenumber/\inserttotalframenumber}
-    \fill[stplred]
-      (current page.north west) rectangle
-      ($(current page.north west)+(\stplprog\paperwidth,-2.5pt)$);
-  \end{tikzpicture}%
-}
+
+
+%% ---- Incremental reveals ----
+\beamerdefaultoverlayspecification{<+->}
 
 %% ---- Bullet items ----
 \setbeamercolor{itemize item}{fg=stplred}
@@ -116,11 +130,20 @@
 }
 \setbeamertemplate{navigation symbols}{}
 
+%% ---- Title frame helper (uses hero background) ----
+\newcommand{\maketitleframe}{%
+  \stplherobg
+  \begin{frame}[plain]%
+    \titlepage%
+  \end{frame}%
+  \stpldefaultbg
+}
+
 %% ---- Section divider slides ----
 \AtBeginSection[]{%
+  \stplherobg
   \begin{frame}[plain]
     \begin{tikzpicture}[remember picture, overlay]
-      \fill[stpldark] (current page.south west) rectangle (current page.north east);
       \fill[stplred, opacity=0.07]
         ([xshift=-2.5cm]current page.east) circle (5.5cm);
       \fill[stplred]
@@ -135,6 +158,7 @@
     \end{minipage}%
     \vfill
   \end{frame}%
+  \stpldefaultbg
 }
 
 %% ---- Title page ----

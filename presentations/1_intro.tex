@@ -24,10 +24,10 @@
 
 \begin{frame}{Czym jest Solana?}
   \begin{itemize}
-    \item Blockchain wysokiej wydajności --- 50\,000+ TPS
-    \item Proof of History (PoH) + Proof of Stake (PoS)
-    \item Niskie opłaty transakcyjne (\textless{} \$0.001)
-    \item Rosnący ekosystem: DeFi, NFT, dApps
+    \item Rozproszona sieć ze środowiskiem wykonawczym - chmura
+    \item Blockchain wysokiej wydajności --- 50\,000+ TPS - szybka
+    \item Proof of History (PoH) + Proof of Stake (PoS) - bezpieczna
+    \item Niskie opłaty transakcyjne (\textless{} \$0.001) - tania
   \end{itemize}
 \end{frame}
 
@@ -36,9 +36,9 @@
 
 \begin{frame}{Czym jest Rust?}
   \begin{itemize}
-    \item Język systemowy: bezpieczeństwo pamięci bez GC
-    \item Gwarancje kompilacyjne: brak race conditions
     \item Główny język programów on-chain na Solanie
+    \item Język systemowy: bezpieczeństwo pamięci bez GC
+    \item Rozbudowany ekosystem: biblioteki, narzędzia, materiały
     \item Narzędzia: \texttt{rustup}, \texttt{cargo}, \texttt{clippy}
   \end{itemize}
 \end{frame}
@@ -76,10 +76,10 @@
 
 \begin{frame}{A logowanie?}
   \begin{itemize}
-    \item \texttt{msg!("...")} --- prosty log w programie Rust
-    \item \texttt{solana logs} --- podgląd logów w CLI
-    \item Explorer: \texttt{explorer.solana.com} lub \texttt{solscan.io}
-    \item Events w Anchor --- strukturalne logi dla klientów
+    \item Klucze ed25519 --- para: klucz prywatny + publiczny
+    \item Klucz publiczny = adres konta w sieci
+    \item Każda transakcja podpisana kluczem prywatnym
+    \item Portfel (wallet) przechowuje klucz i podpisuje w imieniu użytkownika
   \end{itemize}
 \end{frame}
 
@@ -106,26 +106,8 @@
   \end{columns}
 \end{frame}
 
-\begin{frame}{Decentralized Finance}
-  \begin{itemize}
-    \item DEX-y: Raydium, Orca, Jupiter Aggregator
-    \item Lending: Kamino, Marginfi
-    \item Stablecoins: USDC, USDT, PayPal USD
-    \item Łączna wartość zablokowana (TVL): \textgreater{} \$5 mld
-  \end{itemize}
-\end{frame}
-
 % ----------------------------------------------------------------
 \section{Co dalej?}
-
-\begin{frame}{Co dalej?}
-  \begin{itemize}
-    \item Zainstaluj Rust + Solana CLI + Anchor
-    \item Uruchom lokalny validator: \texttt{solana-test-validator}
-    \item Napisz pierwszy program --- \texttt{hello\_world}
-    \item Dołącz do Superteam Poland i buduj!
-  \end{itemize}
-\end{frame}
 
 % ----------------------------------------------------------------
 \begin{frame}[plain]
