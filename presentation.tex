@@ -1,13 +1,113 @@
 \documentclass{beamer}
 
-\usetheme{Madrid}
-\usecolortheme{default}
 \usepackage{Archivo}
 \renewcommand{\sfdefault}{\rmdefault}
+\usepackage{graphicx}
+\usepackage{tikz}
+
+%% ---- Superteam Poland brand colors ----
+\definecolor{stpldark}{HTML}{0B0E0F}   % near-black background
+\definecolor{stplcard}{HTML}{161A1B}   % slightly lighter for frames/blocks
+\definecolor{stplred}{HTML}{DC143C}    % brand crimson red
+\definecolor{stplwhite}{HTML}{FFFFFF}  % white
+\definecolor{stplmuted}{HTML}{8A9BA8}  % muted / secondary text
+
+\usetheme{default}
+
+%% ---- Background & base text ----
+\setbeamercolor{background canvas}{bg=stpldark}
+\setbeamercolor{normal text}{fg=stplwhite, bg=stpldark}
+\usebeamercolor{normal text}
+
+%% ---- Structure (bullets, rules, separators) ----
+\setbeamercolor{structure}{fg=stplred}
+
+%% ---- Title slide metadata ----
+\setbeamercolor{title}{fg=stplwhite}
+\setbeamercolor{subtitle}{fg=stplred}
+\setbeamercolor{author}{fg=stplwhite}
+\setbeamercolor{institute}{fg=stplmuted}
+\setbeamercolor{date}{fg=stplmuted}
+
+%% ---- Frame title bar ----
+\setbeamercolor{frametitle}{fg=stplwhite, bg=stplcard}
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip
+  \begin{beamercolorbox}[wd=\paperwidth, ht=2.8ex, dp=1.2ex, leftskip=0.6cm]{frametitle}%
+    \usebeamerfont{frametitle}\insertframetitle%
+  \end{beamercolorbox}%
+  {\color{stplred}\hrule height 1.5pt}%
+}
+
+%% ---- Bullet items ----
+\setbeamercolor{itemize item}{fg=stplred}
+\setbeamercolor{itemize subitem}{fg=stplred}
+\setbeamercolor{itemize subsubitem}{fg=stplred}
+\setbeamertemplate{itemize item}{\small$\bullet$}
+\setbeamertemplate{itemize subitem}{\small$\circ$}
+\setbeamercolor{enumerate item}{fg=stplred}
+\setbeamercolor{enumerate subitem}{fg=stplred}
+
+%% ---- Blocks ----
+\setbeamercolor{block title}{fg=stplwhite, bg=stplred}
+\setbeamercolor{block body}{fg=stplwhite, bg=stplcard}
+\setbeamercolor{block title alerted}{fg=stplwhite, bg=stplred!80!black}
+\setbeamercolor{block body alerted}{fg=stplwhite, bg=stplcard}
+\setbeamercolor{block title example}{fg=stplwhite, bg=stplred!40!stplcard}
+\setbeamercolor{block body example}{fg=stplwhite, bg=stplcard}
+\setbeamertemplate{blocks}[rounded][shadow=false]
+
+%% ---- Table of contents ----
+\setbeamercolor{section in toc}{fg=stplwhite}
+\setbeamercolor{subsection in toc}{fg=stplmuted}
+\setbeamertemplate{section in toc}[square]
+
+%% ---- Footline ----
+\setbeamercolor{footline}{fg=stplmuted, bg=stplcard}
+\setbeamertemplate{footline}{%
+  {\color{stplred}\hrule height 0.6pt}%
+  \begin{beamercolorbox}[wd=\paperwidth, ht=2.2ex, dp=1ex]{footline}%
+    \hspace{0.5cm}%
+    \includegraphics[height=1.7ex]{images/stpl-logo.png}%
+    \hspace{0.25cm}\textcolor{stplred}{|}\hspace{0.25cm}%
+    \usebeamerfont{footline}\insertshortauthor%
+    \hfill%
+    \usebeamerfont{footline}%
+    \insertframenumber\,/\,\inserttotalframenumber\hspace{0.5cm}%
+  \end{beamercolorbox}%
+}
+\setbeamertemplate{navigation symbols}{}
+
+%% ---- Title page ----
+\setbeamertemplate{title page}{%
+  \begin{tikzpicture}[remember picture, overlay]
+    % Vertical red accent bar on left edge
+    \fill[stplred]
+      (current page.north west) rectangle ([xshift=5pt]current page.south west);
+    % Subtle red glow in top-right
+    \fill[stplred, opacity=0.07]
+      (current page.north east) circle (4.5cm);
+  \end{tikzpicture}%
+  \vspace{1.2cm}
+  \hspace{0.07\paperwidth}%
+  \begin{minipage}{0.86\paperwidth}
+    \includegraphics[width=3cm]{images/stpl-logo.png}\par
+    \vspace{0.7cm}
+    {\usebeamerfont{title}\usebeamercolor[fg]{title}\inserttitle}\par
+    \vspace{0.25cm}
+    {\usebeamerfont{subtitle}\usebeamercolor[fg]{subtitle}\insertsubtitle}\par
+    \vspace{0.5cm}
+    {\usebeamerfont{author}\usebeamercolor[fg]{author}\insertauthor}\par
+    \vspace{0.15cm}
+    {\small\usebeamercolor[fg]{institute}\insertinstitute\quad
+     \usebeamercolor[fg]{date}\insertdate}
+  \end{minipage}%
+}
 
 \title{Presentation Title}
 \subtitle{Subtitle here}
 \author{Author Name}
+\institute{Superteam Poland}
 \date{\today}
 
 \begin{document}
