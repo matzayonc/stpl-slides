@@ -57,6 +57,34 @@ make pptx PRES=name # specific presentation
 
 Create a new `.tex` file in `presentations/` using `\input{preamble}`. It will be picked up automatically by `make all` and the filter targets.
 
+### Naming convention
+
+Files must follow the pattern `<index>_<slug>.tex`:
+
+- `<index>` — zero-padded number that controls ordering (e.g. `01`, `02`, … `99`)
+- `<slug>` — short lowercase name with no spaces (use `_` within the slug if needed)
+
+Examples: `1_intro.tex`, `2_defi.tex`, `99_example.tex`.
+
+Use `99_` for templates or scratch files that should sort last and not appear in a regular run.
+
+### gn slide policy
+
+Every presentation **must** end with a closing `gn` slide immediately before `\end{document}`:
+
+```latex
+% ================================================================
+\begin{frame}[plain]
+  \begin{center}
+    \vfill
+    {\Huge\bfseries\color{stplwhite} gn}
+    \vfill
+  \end{center}
+\end{frame}
+```
+
+This is the standard sign-off slide. Do not add section headings or any content after it.
+
 ## Font
 
 Uses [Archivo](https://fonts.google.com/specimen/Archivo) via the `Archivo` LaTeX package (included in `texlive-fontsextra`).
