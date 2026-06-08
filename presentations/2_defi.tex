@@ -102,34 +102,6 @@
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Likwidacje}
-  \begin{alertblock}{Co to jest likwidacja?}
-    Gdy Health Factor spada $\leq 1$, dowolny zewnętrzny podmiot
-    (\emph{liquidator}) może spłacić część długu i przejąć collateral
-    z \textbf{dyskontem} (Liquidation Bonus, np.\ 5--10\%).
-  \end{alertblock}
-  \vspace{0.3cm}
-  \begin{itemize}
-    \item Motywacja ekonomiczna dla likwidatorów (arbitraż)
-    \item Chroni protokół przed złymi długami (\emph{bad debt})
-    \item Borower traci część collateral --- ważne zarządzanie ryzykiem
-    \item Boty likwidacyjne monitorują pozycje on-chain
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{Flash Loans}
-  \begin{block}{Flash Loan}
-    Pożyczka bez collateral, która musi być \textbf{zwrócona w tej samej transakcji}.
-  \end{block}
-  \vspace{0.3cm}
-  \begin{itemize}
-    \item Możliwe dzięki atomowości transakcji blockchain
-    \item Zastosowania: arbitraż, samo-likwidacja, refinansowanie
-    \item Jeśli pożyczka nie jest zwrócona --- cała transakcja cofa się
-    \item Opłata zazwyczaj 0.09\% wartości pożyczki
-  \end{itemize}
-\end{frame}
-
 % ================================================================
 \section{AMM + Lending --- jak się łączą?}
 
@@ -169,7 +141,6 @@
       \item Health Factor pilnuje pozycji ($HF > 1$ = bezpieczna)
       \item Utilization Rate wyznacza zmienne oprocentowanie
       \item Likwidacje z bonusem chronią protokół przed bad debt
-      \item Flash Loans --- pożyczka atomowa bez collateral
     \end{itemize}
   \end{block}
   \vspace{0.4cm}
