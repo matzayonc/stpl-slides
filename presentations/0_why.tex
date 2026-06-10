@@ -7,7 +7,7 @@
 \subtitle{Solana Bootcamp}
 \author{}
 \institute{Superteam Poland}
-\date{\today}
+\date{\the\year}
 
 \begin{document}
 
@@ -20,11 +20,11 @@
 % ================================================================
 \section{Problem z prywatnymi serwerami}
 
-\begin{frame}{Każda aplikacja działa na czyimś serwerze}
+\begin{frame}{Prywatne serwery}
   \begin{itemize}
     \item Twoje dane, pieniądze, historia --- na serwerze firmy
-    \item Firma może \textbf{zmienić zasady}, wyłączyć serwis, zablokować konto
-    \item Możesz audytować kod --- ale na produkcji może działać inny
+    \item Firma może \textbf{zmienić zasady} lub zablokować konto
+    \item Kod produkcyjny może różnić się od audytowanego
   \end{itemize}
   \vspace{0.4cm}
   \begin{exampleblock}{Przykłady z życia}
@@ -34,7 +34,7 @@
   \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Prywatny serwer = zaufanie do właściciela}
+\begin{frame}{Problem zaufania}
   \begin{columns}
     \column{0.48\textwidth}
       \begin{block}{Co widzisz}
@@ -59,11 +59,11 @@
 % ================================================================
 \section{Sieci z konsensusem BFT}
 
-\begin{frame}{Co jeśli serwer jest wspólny i nikt go nie kontroluje?}
+\begin{frame}{Wspólna sieć}
   \begin{itemize}
     \item Tysiące niezależnych węzłów przechowuje ten sam stan
     \item Żeby zmienić dane, musisz przekonać \textbf{większość sieci}
-    \item Jeden węzeł może kłamać lub paść --- reszta go przegłosuje
+    \item Nieszczery węzeł zostaje przegłosowany
     \item To jest \textbf{Byzantine Fault Tolerance (BFT)}
   \end{itemize}
   \vspace{0.3cm}
@@ -73,9 +73,9 @@
   \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Blockchain = BFT + niezmienialny rejestr}
+\begin{frame}{Rejestr BFT}
   \begin{itemize}
-    \item Bloki transakcji połączone kryptograficznie --- zmiana jednego unieważnia kolejne
+    \item Zmiana bloku kryptograficznie unieważnia kolejne
     \item Stan sieci jest \textbf{publiczny} --- każdy może go zweryfikować
     \item Każda operacja \textbf{podpisana kluczem} właściciela
   \end{itemize}
@@ -95,12 +95,12 @@
 % ================================================================
 \section{Zastosowanie w finansach}
 
-\begin{frame}{Gdy kod nie może być zmieniony --- finanse działają inaczej}
+\begin{frame}{Smart kontrakty}
   \begin{itemize}
-    \item Logika finansowa to tylko \textbf{kod} --- może działać na blockchainie
+    \item Logika finansowa to \textbf{kod} na blockchainie
     \item \textbf{Smart kontrakt} zastępuje bank, giełdę, notariusza
-    \item Warunki są jawne i egzekwowane automatycznie --- nikt ich nie zmieni
-    \item Permissionless --- każdy może korzystać, bez KYC, bez zgody operatora
+    \item Warunki jawne i egzekwowane automatycznie
+    \item Permissionless --- bez dokumentów i zgody operatora
   \end{itemize}
   \vspace{0.3cm}
   \begin{exampleblock}{Przykłady}
@@ -112,10 +112,10 @@
 % ================================================================
 \section{Dlaczego Solana?}
 
-\begin{frame}{Bitcoin i Ethereum --- za wolne i za drogie}
+\begin{frame}{Obecne ograniczenia}
   \begin{itemize}
     \item \textbf{Bitcoin} --- BFT i bezpieczny, ale bez smart kontraktów
-    \item \textbf{Ethereum} --- smart kontrakty, ale \textasciitilde{}15 TPS i gas \textgreater{} \$50 przy obciążeniu
+    \item \textbf{Ethereum} --- 15 TPS i gas \textgreater{} \$50 przy obciążeniu
     \item Wysoki koszt = tylko duże operacje mają sens
     \item Layer 2 obniżają koszty, ale fragmentują ekosystem
   \end{itemize}
@@ -125,19 +125,19 @@
   \end{alertblock}
 \end{frame}
 
-\begin{frame}{Solana --- BFT compute w skali}
+\begin{frame}{Solana}
   \begin{block}{Kluczowe liczby}
     \begin{itemize}
       \item \textbf{50\,000+ TPS} --- przepustowość porównywalna z Visa
-      \item \textbf{\textless{} \$0.001} --- koszt transakcji, niezależnie od obciążenia sieci
+      \item \textbf{\textless{} \$0.001} --- niezależnie od obciążenia sieci
       \item \textbf{400 ms} --- czas finalizacji bloku
-      \item \textbf{Jeden layer} --- cały ekosystem na jednej sieci, bez fragmentacji
+      \item \textbf{Jeden layer} --- bez fragmentacji ekosystemu
     \end{itemize}
   \end{block}
   \vspace{0.3cm}
   \begin{itemize}
-    \item \textbf{Proof of History (PoH)} --- kryptograficzny zegar, węzły nie muszą czekać na siebie
-    \item \textbf{Sealevel} --- transakcje bez konfliktu wykonują się równolegle
+    \item \textbf{PoH} --- kryptograficzny zegar dla węzłów
+    \item \textbf{Sealevel} --- równoległe wykonanie transakcji
   \end{itemize}
 \end{frame}
 
@@ -148,7 +148,7 @@
   \begin{block}{Dlaczego blockchain?}
     \begin{itemize}
       \item Prywatne serwery wymagają zaufania do właściciela
-      \item BFT konsensus zastępuje zaufanie do ludzi --- zaufaniem do kodu
+      \item BFT: zaufanie do kodu zamiast do ludzi
       \item Smart kontrakty otwierają finanse bez pośredników
     \end{itemize}
   \end{block}
@@ -156,9 +156,25 @@
   \begin{block}{Dlaczego Solana?}
     \begin{itemize}
       \item 50\,000+ TPS i opłaty \textless{} \$0.001 --- BFT compute w skali
-      \item Jeden layer --- prosta, spójna platforma dla całego ekosystemu
+      \item Jeden layer --- spójna platforma ekosystemu
     \end{itemize}
   \end{block}
+\end{frame}
+
+% ================================================================
+\begin{frame}{Plan kursu}
+  Kurs przeprowadzi Cię od podstaw działania blockchaina, przez budowę aplikacji na Solanie,
+  aż do implementacji protokołów DeFi --- pożyczek, AMM i zaawansowanych mechanizmów kont.
+\end{frame}
+
+% ================================================================
+\begin{frame}{O mnie}
+  \begin{itemize}
+    \item 5 lat jako blockchain developer
+    \item Głównie ekosystem Solany
+    \item Współtworzyłem własny L1 blockchain
+    \item Ponad \textbf{1 mld \$} tokenów przez mój kod
+  \end{itemize}
 \end{frame}
 
 % ================================================================

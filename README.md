@@ -68,6 +68,12 @@ Examples: `1_intro.tex`, `2_defi.tex`, `99_example.tex`.
 
 Use `99_` for templates or scratch files that should sort last and not appear in a regular run.
 
+### Content style
+
+- Slide titles: max 2 words
+- Bullet points: short enough to fit on a single line
+- Language: formal Polish (avoid colloquial words)
+
 ### gn slide policy
 
 Every presentation **must** end with a closing `gn` slide immediately before `\end{document}`:
