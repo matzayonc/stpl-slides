@@ -1,0 +1,11 @@
+graph LR
+    RULE["One rule"]
+    subgraph BE["Backend"]
+        B["fee = f(x, y)<br/>layout = struct A"]
+    end
+    subgraph FE["Frontend (TS)"]
+        F["fee = f'(x, y)<br/>layout = guessed"]
+    end
+    RULE --> B
+    RULE --> F
+    B -. "drift  ≠" .-> F

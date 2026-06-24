@@ -1,0 +1,50 @@
+% Pandoc Beamer template for dynaprez.
+% Reuses the shared preamble.tex for all branding/theme setup; this file only
+% maps Pandoc metadata + body into the existing document structure.
+\input{preamble}
+
+% ---- Encoding (Polish glyphs) + amsmath for display math ($$...$$) ----
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+
+% ---- Pandoc compatibility macros (normally injected by the default template) ----
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\providecommand{\pandocbounded}[1]{#1}
+
+% ---- Metadata from YAML frontmatter ----
+$if(title)$
+\title{$title$}
+$endif$
+$if(subtitle)$
+\subtitle{$subtitle$}
+$endif$
+\author{$for(author)$$author$$sep$ \and $endfor$}
+$if(institute)$
+\institute{$institute$}
+$endif$
+\date{$if(date)$$date$$else$\today$endif$}
+
+\begin{document}
+
+\maketitleframe
+
+$if(toc)$
+\begin{frame}{Plan}
+  \tableofcontents
+\end{frame}
+$endif$
+
+$body$
+
+% ---- Standard gn sign-off (enforced for every deck) ----
+\begin{frame}[plain]
+  \begin{center}
+    \vfill
+    {\Huge\bfseries\color{stplwhite} gn}
+    \vfill
+  \end{center}
+\end{frame}
+
+\end{document}

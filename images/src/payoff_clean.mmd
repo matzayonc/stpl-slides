@@ -1,0 +1,6 @@
+graph TD
+    FE["Frontend (WASM)<br/>live preview, no RPC"]
+    BE["Backend (native)<br/>authoritative commit"]
+    CORE["<b>shared core</b><br/>amount_to_shares · health_factor<br/>compute_interest · borrow"]
+    FE -- "same code" --> CORE
+    BE -- "same code" --> CORE

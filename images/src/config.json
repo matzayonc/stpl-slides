@@ -1,0 +1,14 @@
+{
+  "theme": "base",
+  "fontFamily": "Liberation Sans, DejaVu Sans, sans-serif",
+  "flowchart": { "htmlLabels": true, "wrappingWidth": 520, "curve": "basis" },
+  "themeCSS": "text, tspan, .nodeLabel, .edgeLabel, .cluster-label, .cluster span, span, p { font-family: 'Liberation Sans','DejaVu Sans',sans-serif !important; }",
+  "themeVariables": {
+    "fontFamily": "Liberation Sans, DejaVu Sans, sans-serif",
+    "fontSize": "20px",
+    "primaryColor": "#161A1B", "primaryTextColor": "#FFFFFF", "primaryBorderColor": "#DC143C",
+    "lineColor": "#8A9BA8", "tertiaryColor": "#161A1B",
+    "clusterBkg": "#0B0E0F", "clusterBorder": "#1E2526", "titleColor": "#FFFFFF",
+    "edgeLabelBackground": "#0B0E0F", "secondaryColor": "#161A1B"
+  }
+}

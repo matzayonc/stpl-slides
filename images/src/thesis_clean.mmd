@@ -1,0 +1,6 @@
+graph TD
+    CORE["core logic (one crate)<br/>math · rules · layout"]
+    NATIVE["native binary<br/>(the backend)<br/><b>authoritative</b>"]
+    WASM["WASM module<br/>(the browser)<br/><b>identical preview</b>"]
+    CORE -- "compile" --> NATIVE
+    CORE -- "compile → wasm" --> WASM

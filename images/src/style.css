@@ -1,0 +1,4 @@
+* { font-family: 'Liberation Sans', 'DejaVu Sans', sans-serif !important; }
+.nodeLabel, .edgeLabel, .cluster-label, span, p, text {
+  font-family: 'Liberation Sans', 'DejaVu Sans', sans-serif !important;
+}
