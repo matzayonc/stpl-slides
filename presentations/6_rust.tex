@@ -1,0 +1,306 @@
+\input{preamble}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{listings}
+
+%% ---- Rust-ish language + code style (spójny z 5_shared_core) ----
+\lstdefinelanguage{Rust}{
+  keywords={fn,pub,struct,impl,trait,let,mut,self,Self,match,return,for,in,
+            if,else,enum,use,mod,as,where,Option,Result,Some,None,Ok,Err,
+            u8,u16,u32,u64,i64,u128,bool,String,Vec,Pubkey,Context,msg,vec},
+  morecomment=[l]{//},
+  morestring=[b]",
+  sensitive=true,
+}
+\lstset{
+  basicstyle=\ttfamily\scriptsize\color{stplwhite},
+  backgroundcolor=\color{stplcard},
+  keywordstyle=\color{stplred}\bfseries,
+  commentstyle=\color{stplmuted},
+  stringstyle=\color{stplmuted},
+  showstringspaces=false,
+  keepspaces=true,
+  columns=fixed,
+  basewidth=0.46em,
+  frame=leftline,
+  framerule=2pt,
+  rulecolor=\color{stplred},
+  xleftmargin=0.6em,
+  aboveskip=0.4em,
+  belowskip=0.2em,
+  language=Rust,
+}
+
+\title{Szybki Rust}
+\subtitle{Solana Bootcamp --- tyle, ile trzeba do Anchora}
+\author{}
+\institute{Superteam Poland}
+\date{\today}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Plan}
+  \tableofcontents
+\end{frame}
+
+% ================================================================
+\section{Wprowadzenie}
+
+\begin{frame}{Cel}
+  \begin{block}{Po lekcji potrafisz}
+    \begin{itemize}
+      \item Przeczytać sygnaturę funkcji, strukturę i \texttt{match}
+      \item Wyjaśnić, czemu zmienna jest niemutowalna i co robi \texttt{mut}
+      \item Rozpoznać \texttt{Option} i \texttt{Result} oraz operator \texttt{?}
+      \item Rozpoznać makra (\texttt{\#[...]}, \texttt{msg!}, \texttt{vec!})
+    \end{itemize}
+  \end{block}
+  \begin{alertblock}{Czego dziś NIE robimy}
+    Lifetime'y, zaawansowane traity, generyki, async, smart pointery,
+    borrow checker w głębi --- to pełny kurs \textbf{RUST} (sierpień/wrzesień).
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile]{Składnia}
+  \begin{itemize}
+    \item Nazwy w \texttt{snake\_case}, typ \textbf{po} nazwie i dwukropku
+  \end{itemize}
+\begin{lstlisting}
+fn deposit(amount: u64, user: Pubkey) -> Result<()> {
+    // amount: u64  -> argument: typ
+    // -> Result<()> -> typ zwracany
+}
+
+struct Vault {        // rekord danych
+    owner: Pubkey,    // pole: typ,
+    balance: u64,
+}
+\end{lstlisting}
+  \begin{itemize}
+    \item \texttt{fn} = funkcja, \texttt{struct} = rekord pól
+    \item Strzałka \texttt{->} wskazuje, co funkcja zwraca
+  \end{itemize}
+\end{frame}
+
+% ================================================================
+\section{Pięć zaskoczeń}
+
+\begin{frame}[fragile]{Mutowalność}
+  \begin{itemize}
+    \item Inaczej niż w TS/C++ --- zmienna jest \textbf{domyślnie} niemutowalna
+  \end{itemize}
+\begin{lstlisting}
+let x = 5;        // niemutowalne (domyslnie)
+// x = 6;         // BLAD kompilacji
+
+let mut y = 5;    // mut = jawna zgoda na zmiane
+y = 6;            // OK
+\end{lstlisting}
+  \begin{itemize}
+    \item \texttt{mut} to świadoma decyzja, nie przypadek
+    \item Intencja widoczna w kodzie; kompilator jej pilnuje
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Match}
+  \begin{itemize}
+    \item Jak \texttt{switch}, ale \textbf{wyczerpujący} --- pokrywa wszystko
+  \end{itemize}
+\begin{lstlisting}
+match status {
+    0 => msg!("nowy"),
+    1 => msg!("aktywny"),
+    _ => msg!("inny"),   // _ = pozostale przypadki
+}
+\end{lstlisting}
+  \begin{itemize}
+    \item Niekompletny \texttt{match} = błąd kompilacji
+    \item \texttt{\_} łapie resztę; nic nie umknie po cichu
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Bez null}
+  \begin{itemize}
+    \item W Ruście nie ma \texttt{null} --- brak wartości to \texttt{Option}
+  \end{itemize}
+\begin{lstlisting}
+enum Option<T> { Some(T), None }   // wbudowane
+
+let first = accounts.first();      // Option<&Account>
+match first {
+    Some(acc) => msg!("konto"),
+    None      => return Err(error),
+}
+\end{lstlisting}
+  \begin{itemize}
+    \item \texttt{None} zamiast \texttt{null}, \texttt{Some(v)} gdy jest wartość
+    \item Kompilator wymusza obsługę przypadku braku
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Bez wyjątków}
+  \begin{itemize}
+    \item Brak \texttt{try/catch} --- błąd jest zwykłą \textbf{wartością}
+  \end{itemize}
+\begin{lstlisting}
+enum Result<T, E> { Ok(T), Err(E) }
+
+fn load() -> Result<Vault> {
+    let data = read_account()?;   // ? = jesli Err, zwroc blad
+    Ok(data)                      // Ok = sukces
+}
+\end{lstlisting}
+  \begin{itemize}
+    \item \texttt{?} propaguje błąd w górę bez \texttt{if}-ów
+    \item Błąd widoczny w sygnaturze --- nie da się go przeoczyć
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Makra}
+  \begin{itemize}
+    \item Makro = kod, który \textbf{pisze kod} przed kompilacją
+  \end{itemize}
+\begin{lstlisting}
+#[program]                 // atrybut: dopisuje kod do modulu
+pub mod vault { /* ... */ }
+
+msg!("log: {}", x);        // makro logujace
+let v = vec![1, 2, 3];     // makro tworzace Vec
+\end{lstlisting}
+  \begin{itemize}
+    \item \texttt{\#[...]} to atrybut --- Anchor generuje nim boilerplate
+    \item \texttt{!} po nazwie oznacza wywołanie makra
+    \item Nie musisz znać środka --- wiedz, że to generator
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Pożyczanie}
+  \begin{itemize}
+    \item \texttt{\&} jest wszędzie --- to \textbf{pożyczka}, nie kopia
+  \end{itemize}
+\begin{lstlisting}
+fn read(v: &Vault)      { /* tylko odczyt */ }
+fn write(v: &mut Vault) { v.balance += 1; }  // moze zmieniac
+
+let vault = &ctx.accounts.vault;   // & = pozyczam dostep
+\end{lstlisting}
+  \begin{itemize}
+    \item \texttt{\&} = dostęp bez przejęcia własności
+    \item \texttt{\&mut} = pożyczka z prawem zmiany
+    \item Głębiej (borrow checker) --- na kursie \textbf{RUST}
+  \end{itemize}
+\end{frame}
+
+% ================================================================
+\section{Anchor}
+
+\begin{frame}[fragile]{Cztery makra}
+  \begin{itemize}
+    \item Anchor (1.0) to zestaw makr, które generują boilerplate
+  \end{itemize}
+\begin{lstlisting}
+declare_id!("Fg6PaFpoG...");   // adres programu on-chain
+
+#[program]                     // modul z instrukcjami
+pub mod my_program { /* ... */ }
+
+#[derive(Accounts)]            // lista kont instrukcji
+pub struct Initialize<'info> { /* ... */ }
+
+#[account]                     // wlasny typ konta (dane)
+pub struct NewAccount { data: u64 }
+\end{lstlisting}
+  \begin{itemize}
+    \item Każda publiczna funkcja w \texttt{\#[program]} = instrukcja
+    \item \texttt{\#[account]} dodaje 8-bajtowy dyskryminator do danych
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Konta}
+  \begin{itemize}
+    \item \texttt{Context<T>} podaje konta i metadane do instrukcji
+  \end{itemize}
+\begin{lstlisting}
+pub fn initialize(ctx: Context<Initialize>, data: u64)
+    -> Result<()> {
+    ctx.accounts.new_account.data = data;  // dostep do kont
+    Ok(())
+}
+
+#[derive(Accounts)]
+pub struct Initialize<'info> {
+    #[account(init, payer = signer, space = 8 + 8)]
+    pub new_account: Account<'info, NewAccount>,
+    #[account(mut)] pub signer: Signer<'info>,
+    pub system_program: Program<'info, System>,
+}
+\end{lstlisting}
+  \begin{itemize}
+    \item \texttt{init, payer, space} --- utwórz konto i opłać miejsce
+    \item \texttt{\#[account(...)]} = checki bezpieczeństwa za Ciebie
+    \item \texttt{'info} to lifetime --- szczegóły na kursie \textbf{RUST}
+  \end{itemize}
+\end{frame}
+
+% ================================================================
+\section{W praktyce}
+
+\begin{frame}[fragile]{Czytamy Anchora}
+\begin{lstlisting}
+#[program]                                  // makro
+pub mod vault {
+    pub fn deposit(ctx: Context<Deposit>,   // sygnatura
+                   amount: u64) -> Result<()> {
+        let vault = &mut ctx.accounts.vault;  // pozyczka &mut
+        vault.balance = vault.balance
+            .checked_add(amount)              // zwraca Option
+            .ok_or(ErrorCode::Overflow)?;     // Option->Result, ?
+        msg!("Wplacono {}", amount);          // makro
+        Ok(())                                // Result: sukces
+    }
+}
+\end{lstlisting}
+  \begin{itemize}
+    \item Wszystkie pięć wzorców naraz --- i nadal się czyta
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Podsumowanie}
+  \begin{enumerate}
+    \item \textbf{Niemutowalność} domyślna --- \texttt{mut} to jawna zgoda
+    \item \textbf{Match} wyczerpujący --- pokrywasz wszystkie przypadki
+    \item \textbf{Brak null} --- \texttt{Option} z \texttt{Some}/\texttt{None}
+    \item \textbf{Brak wyjątków} --- \texttt{Result} i operator \texttt{?}
+    \item \textbf{Makra} --- \texttt{\#[...]}, \texttt{msg!}, \texttt{vec!} generują kod
+  \end{enumerate}
+  \vspace{0.25cm}
+  \begin{exampleblock}{Tyle wystarczy}
+    Nie znasz całego Rusta --- ale \texttt{lib.rs} z Anchora czytasz bez paniki.
+  \end{exampleblock}
+\end{frame}
+
+% ================================================================
+\begin{frame}[plain]
+  \begin{center}
+    \vfill
+    {\large\color{stplmuted} Pełny Rust --- sierpień i wrzesień}\\[0.45cm]
+    {\Huge\bfseries\color{stplwhite} Na razie: czytasz,\\[0.2cm] nie panikujesz.}
+    \vfill
+  \end{center}
+\end{frame}
+
+% ================================================================
+\begin{frame}[plain]
+  \begin{center}
+    \vfill
+    {\Huge\bfseries\color{stplwhite} gn}
+    \vfill
+  \end{center}
+\end{frame}
+
+\end{document}

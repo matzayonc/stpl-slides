@@ -1,0 +1,347 @@
+\input{preamble}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{listings}
+
+%% ---- Reveal everything one step at a time, in document order ----
+%% The brand blocks are tcolorbox-based and ignore the <+-> default, so we
+%% drive every reveal explicitly with \pause (a single, consistent mechanism).
+\beamerdefaultoverlayspecification{}
+
+%% ---- Rust-ish language + code style ----
+\lstdefinelanguage{Rust}{
+  keywords={fn,pub,struct,impl,trait,let,mut,self,Self,match,return,for,in,
+            if,else,enum,use,mod,as,where,Option,Result,Some,None,
+            u8,u16,u32,u64,i64,u128,bool,String,Vec},
+  morecomment=[l]{//},
+  morestring=[b]",
+  sensitive=true,
+}
+\lstset{
+  basicstyle=\ttfamily\scriptsize\color{stplwhite},
+  backgroundcolor=\color{stplcard},
+  keywordstyle=\color{stplred}\bfseries,
+  commentstyle=\color{stplmuted},
+  stringstyle=\color{stplmuted},
+  showstringspaces=false,
+  keepspaces=true,
+  columns=fixed,
+  basewidth=0.46em,
+  frame=leftline,
+  framerule=2pt,
+  rulecolor=\color{stplred},
+  xleftmargin=0.6em,
+  aboveskip=0.4em,
+  belowskip=0.2em,
+  language=Rust,
+}
+
+\title{One Source of Truth}
+\subtitle{Shared logic for backend and frontend}
+\author{}
+\institute{Rust Meetup}
+\date{\the\year}
+
+\begin{document}
+
+\maketitleframe
+
+% ================================================================
+\section{Problem}
+
+\begin{frame}{A Bug}
+  \vfill
+  \begin{center}
+    {\large\color{stplmuted} The preview promises the user\ldots}\\[0.45cm]
+    {\Huge\bfseries\color{stplwhite} $\approx$ 4.7\%}
+  \end{center}
+  \vfill
+  \pause
+  \begin{center}
+    {\large\color{stplmuted} \ldots the server actually charges}\\[0.45cm]
+    {\Huge\bfseries\color{stplred} 5.1\%}
+  \end{center}
+  \vfill
+  \pause
+  \begin{center}
+    {\large They saw one number and got another --- and don't care which was right.}\\[0.25cm]
+    {\normalsize\color{stplmuted} Preview in TypeScript, truth in Rust. One rounding fix apart.}
+  \end{center}
+  \vfill
+\end{frame}
+
+\begin{frame}{The Disease}
+  \begin{itemize}
+    \item Not a rounding bug --- a \textbf{structural} one
+    \pause
+    \item One rule, implemented \textbf{twice}, synced \textbf{by hand}
+  \end{itemize}
+  \vspace{0.15cm}
+  \pause
+  \begin{center}
+    \includegraphics[height=2.9cm]{images/diag-disease.png}
+  \end{center}
+  \vspace{0.05cm}
+  \pause
+  \begin{itemize}
+    \item Rule changes on one side; the other is forgotten
+    \pause
+    \item Record gains a field; the client parser reads garbage
+    \pause
+    \item Schema / codegen / preview-API still keep \textbf{two} of everything
+  \end{itemize}
+\end{frame}
+
+% ================================================================
+\section{The Pattern}
+
+\begin{frame}{The Thesis}
+  \begin{block}{Stop syncing two implementations --- have one}
+    Write the core once, in a language that targets your backend's native
+    platform \textbf{and} WebAssembly. Ship the WASM build to the frontend.
+  \end{block}
+  \vspace{0.15cm}
+  \pause
+  \begin{center}
+    \includegraphics[height=3.9cm]{images/diag-thesis.png}
+  \end{center}
+\end{frame}
+
+\begin{frame}[plain]
+  \begin{center}
+    \vfill
+    {\Huge\bfseries\color{stplwhite} Compile, don't copy.}\\[0.5cm]
+    {\color{stplred}\rule{3cm}{1.5pt}}
+    \vfill
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Pure Core}
+  \begin{itemize}
+    \item Step 1 --- a crate that knows nothing about either runtime
+    \pause
+    \item No framework, no DB, no browser APIs --- ideally \textbf{zero deps}
+  \end{itemize}
+  \vspace{0.2cm}
+  \pause
+\begin{lstlisting}
+// crate: core-math   (zero dependencies)
+pub fn amount_to_shares(amt: u64, total: u64, shares: u64) -> Option<u64> { }
+pub fn compute_interest(principal: u64, bps: u32, secs: u64) -> Option<u64> { }
+\end{lstlisting}
+  \vspace{0.1cm}
+  \pause
+  \begin{itemize}
+    \item No runtime assumptions = compiles \textbf{anywhere}, including WASM
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Capabilities}
+  \begin{itemize}
+    \item Step 2 --- ask for \textbf{data} through traits, not concrete types
+  \end{itemize}
+  \vspace{0.2cm}
+  \pause
+\begin{lstlisting}
+pub trait Market   { fn total_supply(&self) -> u64; fn updated(&self) -> i64; }
+pub trait Position { fn collateral(&self) -> u64;   fn debt(&self) -> u64; }
+pub trait Clock    { fn now(&self) -> i64; }
+\end{lstlisting}
+  \vspace{0.1cm}
+  \pause
+  \begin{itemize}
+    \item Backend implements them with real records + the system clock
+    \pause
+    \item Frontend implements the same traits with fetched data
+    \pause
+    \item Effects stay out --- pass them in as closures:
+  \end{itemize}
+  \pause
+\begin{lstlisting}
+core.borrow(amount, |amt| ctx.transfer_to_user(amt))?;  // effect on a receiver
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Shared Layout}
+  \begin{itemize}
+    \item Step 3 --- the frontend must \textbf{decode} the records the backend stored
+    \pause
+    \item Define the record \textbf{once}; both sides cast the same struct
+  \end{itemize}
+  \pause
+\begin{lstlisting}
+#[repr(C)]                          // stable field order
+pub struct Pool {
+    pub total_supply: u64, pub total_borrow: u64, pub last_update: i64,
+    _pad: [u8; 7],                  // explicit padding, no uninit bytes
+    _reserved: [u8; 32],            // room to grow without breaking layout
+}
+
+fn parse<T: Pod>(bytes: &[u8]) -> Option<T> {
+    if bytes.len() != size_of::<T>() { return None; }   // length check
+    Some(bytemuck::pod_read_unaligned(bytes))           // bytes -> struct
+}
+\end{lstlisting}
+  \pause
+  \begin{itemize}
+    \item No schema, no JSON --- raw bytes, both targets little-endian
+    \pause
+    \item \texttt{assert\_eq!(size\_of::<Pool>(), 49\_520)} --- drift breaks the build
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{The Payoff}
+  \begin{center}
+    \includegraphics[height=4.2cm]{images/diag-payoff.png}
+  \end{center}
+  \vspace{0.1cm}
+  \pause
+  \begin{alertblock}{The opening bug is now unrepresentable}
+    Preview and commit run \textbf{byte-identical code}. There is no second
+    implementation left to drift.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile]{WASM Surface}
+  \begin{itemize}
+    \item A thin adapter exposes the core to JS --- it holds \textbf{no logic}
+  \end{itemize}
+  \pause
+\begin{lstlisting}
+#[wasm_bindgen]
+pub struct PoolView(Pool);          // wraps the shared zero-copy record
+
+#[wasm_bindgen]
+impl PoolView {
+    pub fn from_bytes(b: &[u8]) -> Option<PoolView> { parse(b).map(Self) }
+    pub fn health_factor(&self) -> Option<u32> { core_math::health(&self.0) }
+}
+\end{lstlisting}
+  \pause
+  \begin{itemize}
+    \item \texttt{wasm-pack} $\rightarrow$ a normal npm package the frontend installs
+    \pause
+    \item The native build links the \textbf{very same} core --- nothing forked
+  \end{itemize}
+\end{frame}
+
+% ================================================================
+\section{Bonus}
+
+\begin{frame}[fragile]{Typestates}
+  \begin{itemize}
+    \item Everything so far works in \textbf{any} compile-to-WASM language
+    \pause
+    \item This part is the type-system dividend
+    \pause
+    \item Scariest bugs = operations in the \textbf{wrong order}
+  \end{itemize}
+  \pause
+\begin{lstlisting}
+Core<.., NotAccrued>
+  .accrue_interest()   ->  Core<.., Accrued>   // only way to get Accrued
+
+impl Core<.., Accrued> {                       // borrow() exists ONLY here
+    pub fn borrow(&mut self, amount: u64, transfer: impl Fn(u64)) -> Result { }
+}
+\end{lstlisting}
+  \pause
+\begin{lstlisting}[language={},keywords={error},keywordstyle=\color{stplred}\bfseries,basicstyle=\ttfamily\footnotesize\color{stplwhite}]
+error[E0599]: no method named `borrow` found
+              for struct `Core<.., NotAccrued>`
+       note: `borrow` exists only after `.accrue_interest()`
+\end{lstlisting}
+  \pause
+  \begin{itemize}
+    \item The same refusal on the server \textbf{and} in the browser --- for free
+  \end{itemize}
+\end{frame}
+
+% ================================================================
+\section{Takeaways}
+
+\begin{frame}{Scorecard}
+  \begin{center}
+  \footnotesize
+  \begin{tabular}{@{}lll@{}}
+    \textbf{Concern} & \textbf{Two impls} & \textbf{One impl, two targets} \\[2pt]
+    \hline \\[-6pt]
+    Math drift        & manual sync, bugs      & impossible --- same fn \\
+    Layout drift      & parser rots            & same struct, size-asserted \\
+    Illegal ordering  & runtime check (maybe)  & compile error, both sides \\
+    Preview accuracy  & ``close enough''       & exact \\
+    Adding a field    & edit N places          & edit once, rebuild \\
+  \end{tabular}
+  \end{center}
+  \vspace{0.2cm}
+  \pause
+  \begin{itemize}
+    \item Cost: a two-target build + discipline to keep the core dep-free
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{When To Use}
+  \begin{columns}
+    \column{0.48\textwidth}
+      \begin{block}{Good fit}
+        \begin{itemize}
+          \item Non-trivial shared math
+          \item Binary / sized records
+          \item Critical invariants
+          \item A systems language
+        \end{itemize}
+      \end{block}
+    \column{0.48\textwidth}
+      \pause
+      \begin{alertblock}{Overkill}
+        \begin{itemize}
+          \item Trivial client logic
+          \item Server-only logic
+          \item No WASM appetite
+        \end{itemize}
+      \end{alertblock}
+  \end{columns}
+  \vspace{0.3cm}
+  \pause
+  \begin{itemize}
+    \item Payoff scales with shared logic + how much layout matters
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Takeaways}
+  \begin{enumerate}
+    \item \textbf{Drift is the disease} --- two impls of one rule will diverge
+    \pause
+    \item \textbf{Compile, don't copy} --- one core $\rightarrow$ native \textbf{and} WASM
+    \pause
+    \item \textbf{Traits} decouple logic from where data lives; closures keep effects out
+    \pause
+    \item \textbf{One \texttt{\#[repr(C)]} struct} makes persistence and parsing one contract
+    \pause
+    \item Preview and commit become, literally, \textbf{the same code}
+    \pause
+    \item \textbf{Bonus:} typestates turn ordering into compile errors
+  \end{enumerate}
+\end{frame}
+
+% ================================================================
+\begin{frame}[plain]
+  \begin{center}
+    \vfill
+    {\large\color{stplmuted} Your turn}\\[0.45cm]
+    {\Huge\bfseries\color{stplwhite} Find the rule you\\[0.2cm] implemented twice.}
+    \vfill
+  \end{center}
+\end{frame}
+
+% ================================================================
+\begin{frame}[plain]
+  \begin{center}
+    \vfill
+    {\Huge\bfseries\color{stplwhite} gn}
+    \vfill
+  \end{center}
+\end{frame}
+
+\end{document}

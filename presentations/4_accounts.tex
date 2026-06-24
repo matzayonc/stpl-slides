@@ -1,0 +1,252 @@
+\input{preamble}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{listings}
+
+%% ---- Rust-ish language + code style (spójny z 5_shared_core / 6_rust) ----
+\lstdefinelanguage{Rust}{
+  keywords={fn,pub,struct,impl,trait,let,mut,self,Self,match,return,for,in,
+            if,else,enum,use,mod,as,where,Option,Result,Some,None,Ok,Err,
+            u8,u16,u32,u64,i64,u128,bool,String,Vec,Pubkey,Context,msg,vec},
+  morecomment=[l]{//},
+  morestring=[b]",
+  sensitive=true,
+}
+\lstset{
+  basicstyle=\ttfamily\scriptsize\color{stplwhite},
+  backgroundcolor=\color{stplcard},
+  keywordstyle=\color{stplred}\bfseries,
+  commentstyle=\color{stplmuted},
+  stringstyle=\color{stplmuted},
+  showstringspaces=false,
+  keepspaces=true,
+  columns=fixed,
+  basewidth=0.46em,
+  frame=leftline,
+  framerule=2pt,
+  rulecolor=\color{stplred},
+  xleftmargin=0.6em,
+  aboveskip=0.4em,
+  belowskip=0.2em,
+  language=Rust,
+}
+
+\title{Model Kont}
+\subtitle{Solana Bootcamp --- wszystko jest kontem}
+\author{}
+\institute{Superteam Poland}
+\date{\today}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Plan}
+  \tableofcontents
+\end{frame}
+
+% ================================================================
+\section{Model kont}
+
+\begin{frame}{Jeden pomysł}
+  \begin{itemize}
+    \item Na Solanie \textbf{wszystko jest kontem}
+    \item Portfel? Konto. Token? Konto. Program? Konto.
+    \item Konto = komórka pamięci z adresem, saldem i danymi
+  \end{itemize}
+  \vspace{0.25cm}
+  \begin{alertblock}{Problem}
+    Skoro wszystko to konta --- jak odróżnić kod od danych i kto co zmienia?
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile]{Anatomia konta}
+\begin{lstlisting}
+struct Account {
+    address:    Pubkey,   // adres konta
+    lamports:   u64,      // saldo (SOL)
+    data:       Vec<u8>,  // bajty danych
+    owner:      Pubkey,   // program-wlasciciel
+    executable: bool,     // czy to kod?
+}
+\end{lstlisting}
+  \begin{itemize}
+    \item Każde konto ma te pola --- i tyle
+    \item Cała Solana to mapa „adres $\to$ konto"
+  \end{itemize}
+  \begin{exampleblock}{Analogia}
+    Konto to plik: ma ścieżkę (adres), rozmiar, zawartość i właściciela.
+  \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Typy kont}
+  \begin{columns}
+    \column{0.48\textwidth}
+      \begin{block}{Konto danych}
+        \begin{itemize}
+          \item \texttt{executable = false}
+          \item Trzyma stan
+          \item Licznik, saldo, głosy
+        \end{itemize}
+      \end{block}
+    \column{0.48\textwidth}
+      \begin{block}{Konto programu}
+        \begin{itemize}
+          \item \texttt{executable = true}
+          \item Trzyma kod
+          \item Skompilowany bytecode
+        \end{itemize}
+      \end{block}
+  \end{columns}
+  \vspace{0.3cm}
+  \begin{itemize}
+    \item Efekt: jeden program obsługuje miliony kont danych
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Vs Ethereum}
+  \begin{columns}
+    \column{0.48\textwidth}
+      \begin{alertblock}{Ethereum}
+        Kontrakt trzyma stan \textbf{w sobie} --- kod i dane razem.
+      \end{alertblock}
+    \column{0.48\textwidth}
+      \begin{block}{Solana}
+        Program \textbf{bezstanowy} --- stan żyje w osobnych kontach.
+      \end{block}
+  \end{columns}
+  \vspace{0.3cm}
+  \begin{exampleblock}{Analogia}
+    Program to funkcja; konta danych to argumenty i pamięć podane z zewnątrz.
+  \end{exampleblock}
+\end{frame}
+
+% ================================================================
+\section{Własność}
+
+\begin{frame}{Właściciel}
+  \begin{itemize}
+    \item Każde konto danych ma program-\textbf{właściciela}
+    \item Tylko właściciel może zmienić bajty konta
+    \item Portfel $\to$ System Program; token $\to$ Token Program
+    \item Konto Twojej apki $\to$ Twój program
+  \end{itemize}
+  \vspace{0.2cm}
+  \begin{alertblock}{Problem}
+    Skoro tylko program zmienia dane --- jak ja autoryzuję zmianę? Podpisem.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}{Owner, Signer}
+  \begin{columns}
+    \column{0.48\textwidth}
+      \begin{block}{Owner}
+        Program z prawem zapisu do bajtów konta.
+      \end{block}
+    \column{0.48\textwidth}
+      \begin{block}{Signer}
+        User, który podpisem autoryzuje instrukcję.
+      \end{block}
+  \end{columns}
+  \vspace{0.3cm}
+  \begin{exampleblock}{Przelew tokena}
+    Właścicielem konta jest Token Program --- ale to \textbf{Ty} podpisujesz zgodę.
+  \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Adres}
+  \begin{itemize}
+    \item Część adresów = klucz publiczny (portfele, nowe konta)
+    \item Część wyliczana deterministycznie z nasion --- to \textbf{PDA}
+    \item PDA = Program Derived Address (szczegóły później)
+  \end{itemize}
+  \vspace{0.25cm}
+  \begin{alertblock}{Sesja live}
+    PDA rozkładamy na czynniki pierwsze na sesji live --- najtrudniejszy temat kursu.
+  \end{alertblock}
+\end{frame}
+
+% ================================================================
+\section{Koszt}
+
+\begin{frame}{Rent}
+  \begin{itemize}
+    \item Dane zajmują miejsce u \textbf{każdego} węzła --- więc kosztują
+    \item Konta muszą być \textbf{rent-exempt}: depozyt z góry
+    \item Depozyt proporcjonalny do rozmiaru konta
+    \item Zamykasz konto $\to$ lamporty wracają do właściciela
+  \end{itemize}
+  \vspace{0.2cm}
+  \begin{exampleblock}{To nie abonament}
+    Rent-exempt to jednorazowy, zwrotny depozyt --- nie miesięczna opłata.
+  \end{exampleblock}
+\end{frame}
+
+\begin{frame}[fragile]{Rozmiar}
+  \begin{itemize}
+    \item Tworząc konto, deklarujesz rozmiar (bajty na dane)
+    \item Za mało --- nie zmieścisz stanu; za dużo --- przepłacasz rent
+  \end{itemize}
+\begin{lstlisting}
+#[account(init, payer = signer, space = 8 + 32 + 8)]
+//                                      ^    ^    ^
+//                          dyskryminator owner licznik
+\end{lstlisting}
+  \begin{itemize}
+    \item W Anchorze liczymy to świadomie atrybutem \texttt{space}
+    \item Projektowanie danych = projektowanie kont
+  \end{itemize}
+\end{frame}
+
+% ================================================================
+\section{W praktyce}
+
+\begin{frame}{Explorer}
+  \begin{exampleblock}{Demo --- Solana Explorer}
+    Otwórz realne konto i odczytaj jego pola wprost z łańcucha.
+  \end{exampleblock}
+  \vspace{0.2cm}
+  \begin{itemize}
+    \item \texttt{adres} --- gdzie konto żyje
+    \item \texttt{owner} --- który program nim rządzi
+    \item \texttt{lamports} --- saldo i depozyt rent
+    \item \texttt{data} oraz \texttt{executable} --- dane vs kod
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Podsumowanie}
+  \begin{enumerate}
+    \item Adres prowadzi do \{lamports, data, owner, executable\}
+    \item Kod i stan rozdzielone --- program skaluje się na miliony kont
+    \item Tylko owner-program zmienia dane; user autoryzuje podpisem
+    \item Dane on-chain kosztują --- konta robimy rent-exempt
+  \end{enumerate}
+  \vspace{0.2cm}
+  \begin{exampleblock}{Analogia na koniec}
+    Konto to plik; program to aplikacja z prawem zapisu do tego pliku.
+  \end{exampleblock}
+\end{frame}
+
+% ================================================================
+\begin{frame}[plain]
+  \begin{center}
+    \vfill
+    {\large\color{stplmuted} Najtrudniejszy temat --- następny}\\[0.45cm]
+    {\Huge\bfseries\color{stplwhite} PDA na sesji\\[0.2cm] live.}
+    \vfill
+  \end{center}
+\end{frame}
+
+% ================================================================
+\begin{frame}[plain]
+  \begin{center}
+    \vfill
+    {\Huge\bfseries\color{stplwhite} gn}
+    \vfill
+  \end{center}
+\end{frame}
+
+\end{document}
