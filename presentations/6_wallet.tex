@@ -1,0 +1,185 @@
+\input{preamble}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+\title{Pierwszy wallet}
+\subtitle{Solana Bootcamp --- Phantom, devnet, Explorer}
+\author{}
+\institute{Superteam Poland}
+\date{\today}
+
+\begin{document}
+
+\maketitleframe
+
+\begin{frame}{Plan}
+  \tableofcontents
+\end{frame}
+
+% ================================================================
+\section{Klucze}
+
+% TODO: 1. Portfel --- twój login --- hook back to Lekcja 2 (no helper block)
+\begin{frame}{Portfel --- twój login}
+  \begin{itemize}
+    \item Za chwilę student zakłada \textbf{własną tożsamość} w sieci
+    \item Ten sam portfel podpisze każdą transakcję do końca kursu
+    \item Wracamy do pytania z Lekcji 2 --- czemu nie ma hasła?
+  \end{itemize}
+\end{frame}
+
+% TODO: 2. Para kluczy --- asymmetric crypto debut (exampleblock: skrytka bankowa)
+\begin{frame}{Para kluczy}
+  \begin{itemize}
+    \item Bez hasła i bez serwera --- co właściwie autoryzuje transakcję?
+    \item Sieć generuje \textbf{parę kluczy} --- dwie liczby związane matematycznie
+    \item Jeden klucz wolno pokazać światu, drugi nigdy nie opuszcza urządzenia
+    \item Pokazywany to \textbf{klucz publiczny} --- pełni rolę adresu konta
+    \item Sekretny to \textbf{klucz prywatny} --- zna go wyłącznie właściciel
+  \end{itemize}
+  \vspace{0.25cm}
+  \begin{exampleblock}{Analogia --- skrytka bankowa}
+    Każdy może wrzucić list przez szczelinę (klucz publiczny).
+    Otworzyć skrytkę od środka może tylko właściciel (klucz prywatny).
+  \end{exampleblock}
+\end{frame}
+
+% TODO: 3. Podpis --- klucz prywatny szyfruje, publiczny weryfikuje (block)
+\begin{frame}{Podpis}
+  \begin{itemize}
+    \item \textbf{Klucz prywatny} liczy \textbf{podpis kryptograficzny} nad danymi transakcji
+    \item Każdy w sieci weryfikuje ten podpis \textbf{kluczem publicznym} nadawcy
+    \item Sam podpis niczego nie zdradza o kluczu prywatnym --- nie da się go cofnąć
+    \item Jeden klucz = jedna tożsamość = jeden unikalny zestaw podpisów
+  \end{itemize}
+  \vspace{0.25cm}
+  \begin{block}{Trzy własności podpisu}
+    \begin{itemize}
+      \item \textbf{Autentyczność} --- podpis mógł powstać tylko z tego klucza
+      \item \textbf{Integralność} --- zmiana jednego bajtu unieważnia podpis
+      \item \textbf{Niezaprzeczalność} --- autor nie wyprze się transakcji
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+% ================================================================
+\section{Phantom}
+
+% TODO: 4. Instalacja Phantom --- demo (screen-grab moment, no helper block)
+\begin{frame}{Instalacja Phantom}
+  \begin{itemize}
+    \item Zainstaluj rozszerzenie \textbf{Phantom} (Chrome, Brave lub Firefox)
+    \item Kliknij \textit{,,Create New Wallet''} --- portfel generuje parę kluczy lokalnie
+    \item Zapisz \textbf{seed phrase} --- szczegóły na kolejnym slajdzie
+    \item Ustaw hasło lokalne --- chroni tylko tę przeglądarkę, nie zastępuje seed
+  \end{itemize}
+\end{frame}
+
+% TODO: 5. Seed phrase --- jedna zasada bezpieczeństwa (alertblock: kto ma seed, ma środki)
+\begin{frame}{Seed phrase}
+  \begin{itemize}
+    \item \textbf{Seed phrase} --- 12 lub 24 angielskie słowa generowane przy zakładaniu portfela
+    \item Z tych słów deterministycznie powstają \textbf{wszystkie} klucze prywatne
+    \item Nigdy nie trafia online --- bez wklejania, bez screenshotów, bez chmury
+    \item Zapis offline --- kartka w sejfie lub manager haseł działający lokalnie
+    \item Na devnecie ryzyka nie ma, ale nawyk wyrabia się od pierwszego portfela
+  \end{itemize}
+  \vspace{0.25cm}
+  \begin{alertblock}{Kto ma seed, ma środki}
+    Seed phrase to jak klucz do mieszkania, którego nie da się dorobić ---
+    nie istnieje procedura ,,zapomniałem''. Wycieka raz, na zawsze.
+  \end{alertblock}
+\end{frame}
+
+% TODO: 6. Devnet vs Mainnet --- A-vs-B opposition (no helper block)
+\begin{frame}{Devnet vs Mainnet}
+  \begin{columns}
+    \column{0.48\textwidth}
+      \begin{block}{Devnet}
+        \begin{itemize}
+          \item Piaskownica dla deweloperów
+          \item Tokeny testowe \textbf{bez wartości}
+          \item Darmowy airdrop SOL na żądanie
+          \item Cały kurs odbywa się tutaj
+        \end{itemize}
+      \end{block}
+
+    \column{0.48\textwidth}
+      \begin{alertblock}{Mainnet}
+        \begin{itemize}
+          \item Realna sieć produkcyjna
+          \item Tokeny mają \textbf{realną wartość}
+          \item Każda transakcja kosztuje prawdziwe SOL
+          \item Nie używamy w tym kursie
+        \end{itemize}
+      \end{alertblock}
+  \end{columns}
+  \vspace{0.3cm}
+  \begin{center}
+    \textcolor{stplmuted}{Jak nie napisano inaczej --- pracujemy na devnecie.}
+  \end{center}
+\end{frame}
+
+% TODO: 7. Airdrop --- devnet faucet demo (exampleblock)
+\begin{frame}{Airdrop}
+  \begin{itemize}
+    \item Devnet pozwala \textbf{dosypać sobie} testowego SOL z faucetu
+    \item Trochę SOL jest potrzebne na opłaty transakcji i \textbf{rent} kont
+    \item Źródła --- \texttt{solana airdrop} (CLI), \texttt{faucet.solana.com}, Solana Playground
+    \item Typowo 1--2 SOL na żądanie, z dziennym limitem per adres
+  \end{itemize}
+  \vspace{0.25cm}
+  \begin{exampleblock}{Demo --- faucet.solana.com}
+    Otwórz faucet, wklej adres skopiowany z Phantom, kliknij \textit{,,Devnet''},
+    sprawdź zaktualizowane saldo w portfelu.
+  \end{exampleblock}
+\end{frame}
+
+% TODO: 8. Pierwsza transakcja + Explorer --- demo (exampleblock: podpis/status/opłata)
+\begin{frame}{Pierwsza transakcja}
+  \begin{itemize}
+    \item Wykonaj dowolny transfer SOL między dwoma adresami devnet
+    \item Otwórz \texttt{explorer.solana.com} i przełącz sieć na \textbf{Devnet}
+    \item Znajdź transakcję po podpisie skopiowanym z Phantom
+    \item Zobacz status \textit{finalized}, opłatę i listę kont biorących udział
+    \item To dokładnie ten \textbf{write} z Lekcji 2 --- podpisany, opłacony, atomowy
+  \end{itemize}
+  \vspace{0.25cm}
+  \begin{exampleblock}{Co zobaczysz w Explorerze}
+    \begin{itemize}
+      \item Podpis transakcji jako jej unikalny identyfikator
+      \item Status finalizacji i numer slotu
+      \item Opłatę sieciową oraz listę kont, które zmieniły stan
+    \end{itemize}
+  \end{exampleblock}
+\end{frame}
+
+% ================================================================
+\section{Podsumowanie}
+
+% TODO: 9. Checklist --- gotowe do zadania blokującego
+\begin{frame}{Checklist}
+  \begin{enumerate}
+    \item[{[\ ]}] Phantom zainstalowany w przeglądarce
+    \item[{[\ ]}] Seed phrase zapisany offline
+    \item[{[\ ]}] Sieć w portfelu ustawiona na \textbf{devnet}
+    \item[{[\ ]}] Airdrop wykonany, saldo \textgreater{} 0 SOL
+    \item[{[\ ]}] Pierwsza transakcja widoczna w Solana Explorer
+  \end{enumerate}
+  \vspace{0.5cm}
+  \begin{center}
+    \textcolor{stplmuted}{Masz wszystko do zadania blokującego.}
+  \end{center}
+\end{frame}
+
+% ================================================================
+\begin{frame}[plain]
+  \begin{center}
+    \vfill
+    {\Huge\bfseries\color{stplwhite} gn}
+    \vfill
+  \end{center}
+\end{frame}
+
+\end{document}

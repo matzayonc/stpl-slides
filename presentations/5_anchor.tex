@@ -1,0 +1,285 @@
+\input{preamble}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+\title{Anatomia Anchora}
+\subtitle{Solana Bootcamp --- framework programu on-chain}
+\author{}
+\institute{Superteam Poland}
+\date{\today}
+
+\begin{document}
+
+\maketitleframe
+
+\begin{frame}{Plan}
+  \tableofcontents
+\end{frame}
+
+% ================================================================
+\section{Transakcja}
+
+% 1. Co user wysyła do sieci --- problem hook (alertblock: kto autoryzuje?)
+\begin{frame}{Co user wysyła}
+  \begin{itemize}
+    \item Frontend pokazuje przycisk ,,wymień'' --- klik i coś leci do sieci
+    \item Z Lekcji 2: read jest gratis, write wymaga czegoś więcej
+    \item Węzeł nie ufa frontendowi --- musi sam sprawdzić każdy bajt
+    \item Pytanie nie brzmi ,,co'' --- brzmi ,,w jakiej formie''
+  \end{itemize}
+  \vspace{0.25cm}
+  \begin{alertblock}{Pytanie}
+    Kto autoryzuje zmianę stanu --- i jak węzeł to weryfikuje?
+  \end{alertblock}
+\end{frame}
+
+% 2. Transakcja --- term debut: instrukcja + transakcja (block: def)
+\begin{frame}{Transakcja}
+  \begin{itemize}
+    \item Pojedyncze wywołanie programu to \textbf{instrukcja}: trójka (program, konta, dane)
+    \item Koperta z jedną lub kilkoma instrukcjami to \textbf{transakcja}
+    \item Koperta niesie też listę \textbf{signerów} i \textbf{opłatę} dla walidatora
+    \item Read z Lekcji 2 nie wymaga koperty --- każdy write owszem
+  \end{itemize}
+  \vspace{0.25cm}
+  \begin{block}{Definicja}
+    Transakcja = lista instrukcji + lista podpisów + opłata.
+    Jedyna forma zapisu stanu na Solanie.
+  \end{block}
+\end{frame}
+
+% 3. Atomowość --- wszystkie albo żadna (exampleblock)
+\begin{frame}{Atomowość}
+  \begin{itemize}
+    \item Transakcja wykonuje się w całości albo wcale --- to \textbf{atomowość}
+    \item Jedna instrukcja zwraca błąd $\to$ sieć cofa wszystkie zmiany
+    \item Stan po nieudanej transakcji jest identyczny jak przed
+    \item Opłata leci do walidatora niezależnie od wyniku
+  \end{itemize}
+  \vspace{0.25cm}
+  \begin{exampleblock}{Swap + transfer w jednej tx}
+    Instrukcja 1 wymienia SOL na USDC, instrukcja 2 wysyła USDC do znajomego.
+    Jeśli transfer padnie, swap też się cofa --- nie zostajesz z połową operacji.
+  \end{exampleblock}
+\end{frame}
+
+% ================================================================
+\section{Anchor}
+
+% 4. Surowa Solana --- problem (alertblock: łatwo o lukę)
+\begin{frame}{Surowa Solana}
+  \begin{itemize}
+    \item Bez frameworku program dostaje listę kont jako surowe bajty
+    \item Programista sam sprawdza ownera, signera, rozmiar, dyskryminator
+    \item Sam też serializuje strukturę do bajtów i z powrotem
+    \item Jeden zapomniany \texttt{if} = otwarte drzwi do funduszy
+  \end{itemize}
+  \vspace{0.25cm}
+  \begin{alertblock}{Ryzyko}
+    Ręczna walidacja, ręczna serializacja, ręczne sprawdzanie podpisów ---
+    łatwo o lukę bezpieczeństwa.
+  \end{alertblock}
+\end{frame}
+
+% 5. Czym jest Anchor --- analogy (exampleblock: Rails)
+\begin{frame}{Czym jest Anchor}
+  \begin{itemize}
+    \item \textbf{Anchor} --- framework do pisania programów Solany
+    \item Walidacja kont, serializacja i IDL --- z automatu
+    \item Programista pisze logikę, framework dostarcza boilerplate
+    \item Standard de facto: większość programów w ekosystemie jest w Anchorze
+  \end{itemize}
+  \vspace{0.25cm}
+  \begin{exampleblock}{Analogia}
+    Rails / NestJS dla Solany --- konwencje zamiast pisania wszystkiego od zera.
+  \end{exampleblock}
+\end{frame}
+
+% 6. Trzy bloki --- #[program], #[derive(Accounts)], #[account] (block: def)
+\begin{frame}{Trzy bloki}
+  \begin{itemize}
+    \item Program Anchor składa się z trzech makr-atrybutów
+    \item \texttt{\#[program]} --- moduł z instrukcjami
+    \item \texttt{\#[derive(Accounts)]} --- struktury kont z walidacją
+    \item \texttt{\#[account]} --- układ danych w koncie danych
+  \end{itemize}
+  \vspace{0.25cm}
+  \begin{block}{Trzy role}
+    \textbf{co robi} (instrukcje) $\cdot$ \textbf{na czym} (konta + walidacja) $\cdot$
+    \textbf{jak wygląda stan} (pola konta).
+  \end{block}
+\end{frame}
+
+% 7. #[program] --- instrukcje, Context<T> (block; short code)
+\begin{frame}[fragile]{\texttt{\#[program]}}
+  \begin{itemize}
+    \item Moduł \texttt{\#[program]} grupuje wszystkie instrukcje programu
+    \item Każda \texttt{pub fn} w tym module to jedna instrukcja on-chain
+    \item Pierwszy argument zawsze \texttt{\textbf{Context<T>}} --- konta + meta
+    \item Zwracany typ to \texttt{Result<()>} --- sukces lub błąd Anchora
+  \end{itemize}
+  \begin{block}{Szkielet instrukcji}
+\begin{lstlisting}
+#[program]
+pub mod licznik {
+    use super::*;
+    pub fn increment(ctx: Context<Increment>) -> Result<()> {
+        ctx.accounts.counter.value += 1;
+        Ok(())
+    }
+}
+\end{lstlisting}
+  \end{block}
+\end{frame}
+
+% 8. #[derive(Accounts)] --- deklaratywne bezpieczeństwo (exampleblock)
+\begin{frame}[fragile]{\texttt{\#[derive(Accounts)]}}
+  \begin{itemize}
+    \item Każda instrukcja ma osobną \texttt{struct} z listą wymaganych kont
+    \item \texttt{\#[derive(Accounts)]} generuje walidację z deklaracji pól
+    \item Constraints sprawdzane \textbf{przed} ciałem instrukcji
+    \item Z Lekcji 4: owner pilnuje danych, signer autoryzuje zmianę
+  \end{itemize}
+  \begin{exampleblock}{Efekt}
+    Luka łapana w deklaracji, nie w ręcznym \texttt{if} --- middleware walidujący
+    request, zanim dotrze do logiki.
+  \end{exampleblock}
+\end{frame}
+
+% 9. Constraints --- init, mut, signer, seeds, has_one (block; code)
+\begin{frame}[fragile]{Constraints}
+  \begin{itemize}
+    \item \textbf{init} --- tworzy nowe konto i opłaca rent
+    \item \textbf{mut} --- konto będzie zmieniane (zapis bajtów)
+    \item \textbf{signer} --- klucz musi podpisać transakcję
+    \item \textbf{seeds} --- adres wyliczony deterministycznie (PDA)
+    \item \textbf{has\_one} --- pole konta musi pasować do innego konta
+  \end{itemize}
+  \begin{block}{Struktura kont dla \texttt{deposit}}
+\begin{lstlisting}
+#[account]
+pub struct Vault { pub owner: Pubkey, pub balance: u64 }
+#[derive(Accounts)]
+pub struct Deposit<'info> {
+    #[account(mut, has_one = owner)] // vault.owner==owner.key
+    pub vault: Account<'info, Vault>,
+    #[account(mut)]
+    pub owner: Signer<'info>,
+}
+\end{lstlisting}
+  \end{block}
+\end{frame}
+
+% 10. Serializacja --- Borsh za ciebie (exampleblock)
+\begin{frame}{Serializacja}
+  \begin{itemize}
+    \item Konto trzyma surowe bajty --- program operuje na strukturach
+    \item Konwersja tam i z powrotem to \textbf{serializacja}
+    \item Anchor używa \textbf{Borsh} --- kompaktowego formatu binarnego
+    \item Adnotacja \texttt{\#[account]} dokleja kod serializacji automatycznie
+  \end{itemize}
+  \vspace{0.25cm}
+  \begin{exampleblock}{Efekt}
+    Nie liczysz offsetów ani nie wczytujesz bajtów ręcznie ---
+    operujesz na polach struktury jak na zwykłym rekordzie.
+  \end{exampleblock}
+\end{frame}
+
+% 11. Dyskryminator --- 8 bajtów (block: def)
+\begin{frame}{Dyskryminator}
+  \begin{itemize}
+    \item Konto trzyma bajty --- skąd program wie, jak je odczytać?
+    \item Pierwsze 8 bajtów konta = odcisk typu, czyli \textbf{dyskryminator}
+    \item Anchor sprawdza go przed deserializacją --- niezgodność = błąd
+    \item Te 8 bajtów musi się zmieścić w zadeklarowanym \texttt{space}
+  \end{itemize}
+  \vspace{0.25cm}
+  \begin{block}{Analogia}
+    Nagłówek \texttt{Content-Type} dla konta --- mówi, jak interpretować zawartość,
+    zanim zaczniesz ją czytać.
+  \end{block}
+\end{frame}
+
+% 12. IDL --- term debut + Swagger analogy (exampleblock)
+\begin{frame}{IDL}
+  \begin{itemize}
+    \item Frontend musi wiedzieć, jakie instrukcje program przyjmuje
+    \item Anchor generuje opis: JSON z instrukcjami, kontami i typami
+    \item Ten opis to \textbf{Interface Description Language (IDL)}
+    \item Klient (\texttt{@coral-xyz/anchor}) bierze IDL i daje gotowe wywołania
+    \item Pełna integracja frontend $\leftrightarrow$ program na Live 4
+  \end{itemize}
+  \vspace{0.25cm}
+  \begin{exampleblock}{Analogia}
+    Swagger / OpenAPI dla programu on-chain --- jedno źródło prawdy
+    dla wszystkich klientów.
+  \end{exampleblock}
+\end{frame}
+
+% 13. Mini-program --- code IS the slide (no helper block)
+\begin{frame}[fragile]{Mini-program}
+\begin{lstlisting}
+declare_id!("Lic1111111111111111111111111111111111111111");
+
+#[program]
+pub mod licznik {
+    use super::*;
+    pub fn init(ctx: Context<Init>) -> Result<()> {
+        ctx.accounts.counter.value = 0;
+        Ok(())
+    }
+    pub fn increment(ctx: Context<Inc>) -> Result<()> {
+        ctx.accounts.counter.value += 1;
+        Ok(())
+    }
+}
+
+#[derive(Accounts)]
+pub struct Init<'info> {
+    #[account(init, payer = user, space = 8 + 8)]
+    pub counter: Account<'info, Counter>,
+    #[account(mut)] pub user: Signer<'info>,
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct Inc<'info> {
+    #[account(mut)] pub counter: Account<'info, Counter>,
+}
+
+#[account]
+pub struct Counter { pub value: u64 }
+\end{lstlisting}
+\end{frame}
+
+% ================================================================
+\section{Podsumowanie}
+
+% 14. Podsumowanie --- recap (no helper block per §4.3)
+\begin{frame}{Podsumowanie}
+  \begin{block}{Co Anchor robi za ciebie}
+    \begin{itemize}
+      \item Walidacja kont przed ciałem instrukcji
+      \item Serializacja Borsh i dyskryminatory
+      \item IDL i czytelne błędy zamiast surowych kodów
+    \end{itemize}
+  \end{block}
+  \vspace{0.3cm}
+  \begin{block}{Trzy bloki do zapamiętania}
+    \texttt{\#[program]} --- instrukcje $\cdot$
+    \texttt{\#[derive(Accounts)]} --- konta + walidacja $\cdot$
+    \texttt{\#[account]} --- układ danych.
+  \end{block}
+\end{frame}
+
+% ================================================================
+\begin{frame}[plain]
+  \begin{center}
+    \vfill
+    {\Huge\bfseries\color{stplwhite} gn}
+    \vfill
+  \end{center}
+\end{frame}
+
+\end{document}

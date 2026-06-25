@@ -5,7 +5,7 @@
 \usepackage{amsmath}
 
 \title{DeFi na Solanie}
-\subtitle{Lending --- Solana Bootcamp}
+\subtitle{AMM \& Lending --- Solana Bootcamp}
 \author{}
 \institute{Superteam Poland}
 \date{\today}
@@ -21,20 +21,195 @@
 % ================================================================
 \section{Czym jest DeFi?}
 
+\begin{frame}{Wracamy do obietnicy}
+  \begin{itemize}
+    \item Lekcja 0 obiecała usługi finansowe \textbf{bez pośrednika}
+    \item Bank, broker, notariusz znikają --- ich rolę przejmuje kod
+    \item Pytanie z tej lekcji --- z czego konkretnie zbudujemy ten brak pośrednika?
+    \item Dwa filary, na które rozłożymy odpowiedź: \textbf{wymiana tokenów} i \textbf{pożyczki}
+  \end{itemize}
+  \vspace{0.25cm}
+  \begin{alertblock}{Jak bez pośrednika?}
+    Każdy ruch wymaga zgody na stan rachunku. Skoro nikt go nie pilnuje ---
+    co go pilnuje?
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}{Token programowalny}
+  \begin{itemize}
+    \item Złoty czy dolar wymagają banku, który prowadzi rejestr posiadaczy
+    \item Solana zna jeden mechanizm zapisu wartości --- konto z saldem
+    \item Saldo bez banku, z regułami zaszytymi w kodzie --- to \textbf{token}
+    \item Token może oznaczać walutę, udział w puli, głos albo bilet wstępu
+  \end{itemize}
+  \vspace{0.25cm}
+  \begin{exampleblock}{Analogia --- żeton w kasynie}
+    Żeton ma wartość tylko w danym kasynie. Reguły wymiany zna kasyno,
+    nie bank. Token on-chain działa tak samo, tylko kasynem jest kod.
+  \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Tokenomika}
+  \begin{itemize}
+    \item Token bez ekonomii to puste konto --- liczba bez znaczenia
+    \item \textbf{Podaż} --- ile sztuk istnieje i jak rośnie z czasem
+    \item \textbf{Użytek} --- po co ktokolwiek miałby go trzymać
+    \item \textbf{Zachęty} --- co dostaje LP, walidator, governor za udział
+  \end{itemize}
+  \vspace{0.25cm}
+  \begin{block}{Trzy pytania projektanta tokenu}
+    \textbf{Ile} (podaż) $\cdot$ \textbf{po co} (użytek) $\cdot$
+    \textbf{dlaczego ja} (zachęty). Każdy projekt DeFi odpowiada na te trzy.
+  \end{block}
+\end{frame}
+
 \begin{frame}{Czym jest DeFi?}
   \begin{itemize}
-    \item \textbf{DeFi} (Decentralized Finance) --- usługi finansowe bez pośredników
+    \item \textbf{Decentralized Finance (DeFi)} --- usługi finansowe bez pośredników
     \item Inteligentne kontrakty zamiast banków i brokerów
     \item Permissionless --- każdy może korzystać, bez KYC
     \item Composable --- protokoły łączą się jak klocki
     \item Dwa filary: \textbf{wymiana tokenów} (AMM) i \textbf{pożyczki} (Lending)
   \end{itemize}
+  \vspace{0.3cm}
+  \begin{exampleblock}{Na Solanie}
+    \textbf{Orca}, \textbf{Raydium} (AMM) \\
+    \textbf{Kamino}, \textbf{Solend}, \textbf{MarginFi} (Lending)
+  \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Mint i Token Account}
+  \begin{itemize}
+    \item \textbf{Mint} --- definicja waluty: podaż, decimals, mint authority
+    \item \textbf{Token Account} --- saldo dla pary właściciel + mint
+    \item \textbf{Associated Token Account (ATA)} --- deterministyczny adres konta tokenowego dla danego usera
+    \item Każdy token to osobny \texttt{Mint}; każdy posiadacz ma własne \texttt{Token Account}
+  \end{itemize}
+  \vspace{0.3cm}
+  \begin{block}{Mint vs Token Account}
+    \texttt{Mint} opisuje walutę --- jedna definicja na token.
+    \texttt{Token Account} trzyma saldo --- jedno konto na parę (właściciel, mint).
+  \end{block}
+\end{frame}
+
+% ================================================================
+\section{AMM --- Automated Market Maker}
+
+\begin{frame}{Order book vs AMM}
+  \begin{columns}
+    \column{0.48\textwidth}
+      \begin{block}{Order Book (CEX)}
+        \begin{itemize}
+          \item Kupujący i sprzedający składają zlecenia
+          \item Cena wynika z dopasowania zleceń
+          \item Wymaga animatorów rynku (market makers)
+          \item Przykład: Binance, Openbook
+        \end{itemize}
+      \end{block}
+
+    \column{0.48\textwidth}
+      \begin{block}{\textbf{Automated Market Maker (AMM)}}
+        \begin{itemize}
+          \item Brak zleceń --- cena z formuły matematycznej
+          \item Płynność dostarcza każdy (LP)
+          \item Swap zawsze możliwy, 24/7
+          \item Przykład: Orca, Raydium
+        \end{itemize}
+      \end{block}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Constant Product}
+  \begin{itemize}
+    \item Pula trzyma rezerwy dwóch tokenów, $x$ i $y$
+    \item Każdy swap zmienia obie rezerwy, ale ich \emph{iloczyn} musi zostać stały
+    \item Cena chwilowa wynika z proporcji: $p = y / x$
+    \item Im więcej kupujesz jednego tokenu, tym wyższa cena jednostkowa
+  \end{itemize}
+  \vspace{0.3cm}
+  \begin{block}{Niezmiennik}
+    \[
+      x \cdot y = k
+    \]
+    $x$ --- rezerwa tokenu A \quad $y$ --- rezerwa tokenu B \quad $k$ --- stała
+  \end{block}
+\end{frame}
+
+\begin{frame}{Jak działa swap?}
+  \begin{itemize}
+    \item Użytkownik wpłaca $\Delta x$ tokenu A, otrzymuje $\Delta y$ tokenu B
+    \item Nowe rezerwy są policzone tak, aby zachować $k = x \cdot y$
+    \item Im większy swap względem puli, tym gorsza cena --- to \textbf{price impact} (slippage)
+  \end{itemize}
+  \vspace{0.3cm}
+  \begin{exampleblock}{Przykład: SOL $\to$ USDC}
+    Pula: $x = 1\,000$ SOL, $y = 100\,000$ USDC \quad $k = 10^8$.
+    Chcemy kupić $\Delta y = 10\,000$ USDC:
+    \[
+      x' = \frac{k}{y - \Delta y} = \frac{10^8}{90\,000} \approx 1\,111{,}1 \text{ SOL}
+    \]
+    Płacimy $\approx 111{,}1$ SOL zamiast spodziewanych $100$ SOL
+    (cena startowa $100\,\text{USDC/SOL}$).
+  \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Dostarczanie płynności}
+  \begin{itemize}
+    \item \textbf{Liquidity Provider (LP)} wpłaca oba tokeny w proporcji odpowiadającej aktualnej cenie
+    \item Otrzymuje \textbf{LP tokeny} --- potwierdzenie udziału w puli
+    \item Zarabia na \textbf{opłatach transakcyjnych} (np.\ 0.25\% per swap)
+    \item Może wycofać płynność w dowolnym momencie
+  \end{itemize}
+  \vspace{0.3cm}
+  \begin{exampleblock}{Przykład}
+    Pula SOL/USDC, cena 100 USDC/SOL. \\
+    Wpłacasz: 10 SOL + 1\,000 USDC $\Rightarrow$ otrzymujesz LP tokeny proporcjonalnie.
+  \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Impermanent Loss}
+  \begin{itemize}
+    \item IL jest tym większy, im bardziej cena odchyla się od ceny wejścia
+    \item Przy powrocie ceny do poziomu wejścia --- IL znika (stąd \emph{impermanent})
+    \item LP profituje gdy: \textbf{opłaty > IL}
+    \item Strategia: pule stabilnych par (np.\ USDC/USDT) mają minimalne IL
+  \end{itemize}
+  \vspace{0.3cm}
+  \begin{alertblock}{\textbf{Impermanent Loss (IL)}}
+    Gdy cena tokenów zmienia się względem chwili wpłaty, wartość pozycji LP jest
+    \emph{mniejsza} niż gdybyś po prostu trzymał tokeny (HODL).
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}{Concentrated Liquidity}
+  \begin{itemize}
+    \item \textbf{Concentrated Liquidity Market Maker (CLMM)} --- LP wybiera \textbf{przedział cenowy} $[p_a,\, p_b]$, w którym działa
+    \item Kapitał jest efektywniejszy --- więcej płynności tam, gdzie handel
+    \item Wyższe opłaty przy trafnym wyborze zakresu
+    \item Wyższe ryzyko IL przy wyjściu ceny z zakresu
+  \end{itemize}
+  \vspace{0.3cm}
+  \begin{exampleblock}{Na Solanie}
+    \textbf{Orca Whirlpools}, \textbf{Raydium CLMM} --- wiodące implementacje CLMM
+  \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Ryzyka w AMM}
+  \begin{alertblock}{Ryzyka, o których warto pamiętać}
+    \begin{itemize}
+      \item \textbf{Impermanent Loss} --- przy zmiennych cenach względem wejścia
+      \item \textbf{Price impact} --- duże swapy względem puli kosztują więcej
+      \item \textbf{Smart contract risk} --- błąd w kodzie = utrata środków
+      \item \textbf{Oracle manipulation} --- fałszywe ceny zaburzają wycenę
+      \item \textbf{Rug pull} --- złośliwy projekt drainuje płynność
+    \end{itemize}
+  \end{alertblock}
 \end{frame}
 
 % ================================================================
 \section{Lending --- protokoły pożyczkowe}
 
-\begin{frame}{Czym są protokoły pożyczkowe?}
+\begin{frame}{Protokoły pożyczkowe}
   \begin{itemize}
     \item Pozwalają \textbf{pożyczyć} (supply) tokeny i zarabiać odsetki
     \item Pozwalają \textbf{zaciągnąć pożyczkę} (borrow) pod zastaw (collateral)
@@ -71,35 +246,48 @@
   \end{columns}
 \end{frame}
 
-\begin{frame}{Współczynnik zabezpieczenia i LTV}
-  \begin{block}{Loan-to-Value (LTV)}
+\begin{frame}{LTV i Health Factor}
+  \begin{itemize}
+    \item \textbf{Loan-to-Value (LTV)} --- stosunek wartości pożyczki do wartości collateral
+    \item Protokół narzuca maksymalne LTV dla każdego aktywa (np.\ 80\% dla SOL)
+    \item \textbf{Health Factor (HF)} mierzy, jak daleko pozycji do likwidacji
+    \item $HF > 1$ --- pozycja bezpieczna \quad $HF \leq 1$ --- otwarta na likwidację
+  \end{itemize}
+  \vspace{0.3cm}
+  \begin{block}{LTV i Health Factor}
     \[
       \text{LTV} = \frac{\text{wartość pożyczki}}{\text{wartość collateral}}
+      \;,\quad
+      HF = \frac{\text{collateral} \cdot \text{liq.\ threshold}}{\text{dług}}
     \]
-    Protokół narzuca maksymalne LTV dla każdego aktywa (np.\ 80\% dla SOL).
   \end{block}
-  \vspace{0.3cm}
-  \begin{itemize}
-    \item \textbf{Health Factor} $> 1$ --- pozycja bezpieczna
-    \item \textbf{Health Factor} $\leq 1$ --- pozycja podatna na likwidację
-    \[
-      HF = \frac{\text{collateral} \times \text{liquidation threshold}}{\text{wartość długu}}
-    \]
-  \end{itemize}
 \end{frame}
 
-\begin{frame}{Model oprocentowania --- Utilization Rate}
-  \begin{block}{Utilization Rate}
-    \[
-      U = \frac{\text{borrowed}}{\text{supplied}}
-    \]
-  \end{block}
-  \vspace{0.2cm}
+\begin{frame}{Utilization Rate}
   \begin{itemize}
     \item Niskie $U$ $\Rightarrow$ niskie APR (zachęta do pożyczania)
     \item Wysokie $U$ $\Rightarrow$ wysokie APR (zachęta do dostarczania płynności)
     \item \textbf{Kink model} --- gwałtowny wzrost oprocentowania po przekroczeniu progu optymalnego (np.\ $U = 80\%$)
   \end{itemize}
+  \vspace{0.3cm}
+  \begin{block}{\textbf{Utilization Rate}}
+    \[
+      U = \frac{\text{borrowed}}{\text{supplied}}
+    \]
+    Wskaźnik wykorzystania puli --- steruje oprocentowaniem.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Ryzyka w Lending}
+  \begin{alertblock}{Ryzyka, o których warto pamiętać}
+    \begin{itemize}
+      \item \textbf{Liquidation risk} --- zbyt wysokie LTV przy spadku rynku
+      \item \textbf{Bad debt} --- protokół traci środki gdy likwidacja jest za wolna
+      \item \textbf{Smart contract risk} --- błąd w kodzie = utrata środków
+      \item \textbf{Oracle manipulation} --- fałszywe ceny prowadzą do likwidacji
+      \item \textbf{Rug pull} --- złośliwy projekt drainuje płynność
+    \end{itemize}
+  \end{alertblock}
 \end{frame}
 
 % ================================================================
@@ -111,6 +299,7 @@
     \item LP tokeny z AMM jako collateral w protokole lending
     \item Borrowed tokeny ponownie dostarczane do AMM (leverage loop)
     \item \textbf{Yield aggregatory} automatyzują strategie
+    \item Protokół wywołuje protokół przez \textbf{Cross-Program Invocation (CPI)} --- mechanizm pokazany w Live 3
   \end{itemize}
   \vspace{0.3cm}
   \begin{exampleblock}{Przykładowa strategia}
@@ -119,34 +308,24 @@
   \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Ryzyka w Lending}
-  \begin{alertblock}{Ryzyka, o których warto pamiętać}
-    \begin{itemize}
-      \item \textbf{Smart contract risk} --- błąd w kodzie = utrata środków
-      \item \textbf{Oracle manipulation} --- fałszywe ceny prowadzą do likwidacji
-      \item \textbf{Liquidation risk} --- zbyt wysokie LTV przy spadku rynku
-      \item \textbf{Bad debt} --- protokół traci środki gdy likwidacja jest za wolna
-      \item \textbf{Rug pull} --- złośliwy projekt drainuje płynność
-    \end{itemize}
-  \end{alertblock}
-\end{frame}
-
 % ================================================================
 \section{Podsumowanie}
 
 \begin{frame}{Podsumowanie}
+  \begin{block}{AMM}
+    \begin{itemize}
+      \item $x \cdot y = k$ --- cena wynika z proporcji rezerw
+      \item LP zarabia opłaty, ale ponosi Impermanent Loss
+      \item CLMM zwiększa efektywność kapitału w wybranym przedziale
+    \end{itemize}
+  \end{block}
   \begin{block}{Lending}
     \begin{itemize}
       \item Overcollateralized borrowing --- brak oceny kredytowej
       \item Health Factor pilnuje pozycji ($HF > 1$ = bezpieczna)
       \item Utilization Rate wyznacza zmienne oprocentowanie
-      \item Likwidacje z bonusem chronią protokół przed bad debt
     \end{itemize}
   \end{block}
-  \vspace{0.4cm}
-  \begin{exampleblock}{Na Solanie}
-    \textbf{Kamino Finance}, \textbf{Solend}, \textbf{MarginFi}
-  \end{exampleblock}
 \end{frame}
 
 % ================================================================

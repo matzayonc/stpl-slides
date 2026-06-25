@@ -68,28 +68,9 @@ Examples: `1_intro.tex`, `2_defi.tex`, `99_example.tex`.
 
 Use `99_` for templates or scratch files that should sort last and not appear in a regular run.
 
-### Content style
+### Content & narrative
 
-- Slide titles: max 2 words
-- Bullet points: short enough to fit on a single line
-- Language: formal Polish (avoid colloquial words)
-
-### gn slide policy
-
-Every presentation **must** end with a closing `gn` slide immediately before `\end{document}`:
-
-```latex
-% ================================================================
-\begin{frame}[plain]
-  \begin{center}
-    \vfill
-    {\Huge\bfseries\color{stplwhite} gn}
-    \vfill
-  \end{center}
-\end{frame}
-```
-
-This is the standard sign-off slide. Do not add section headings or any content after it.
+See [`style.md`](style.md) for the source of truth on titles, bullets, helper blocks, the mandatory closing `gn` slide, and the rest of the narrative conventions. See [`branding.md`](branding.md) for visual treatment.
 
 ## Font
 

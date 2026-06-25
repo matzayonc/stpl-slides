@@ -1,8 +1,11 @@
 \input{preamble}
 
-\title{Presentation Title}
-\subtitle{Subtitle here}
-\author{Author Name}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+\title{Tytuł prezentacji}
+\subtitle{Podtytuł --- Solana Bootcamp}
+\author{}
 \institute{Superteam Poland}
 \date{\today}
 
@@ -10,53 +13,95 @@
 
 \maketitleframe
 
-\begin{frame}{Outline}
+\begin{frame}{Plan}
   \tableofcontents
 \end{frame}
 
-\section{Introduction}
+% ================================================================
+\section{Pierwszy temat}
 
-\begin{frame}{Introduction}
+% Concept slide: bullets + exampleblock (illustration / effect)
+\begin{frame}{Krótki tytuł}
   \begin{itemize}
-    \item First point
-    \item Second point
-    \item Third point
+    \item Punkt z \textbf{kluczowym słowem} pogrubionym
+    \item Drugi punkt --- jedno-linijkowy
+    \item Trzeci punkt opisuje problem, a potem nazywa go: \textbf{Termin techniczny}
   \end{itemize}
-\end{frame}
-
-\section{Content}
-
-\begin{frame}{A slide with blocks}
-  \begin{block}{Key Idea}
-    This is a highlighted block.
-  \end{block}
-
-  \begin{alertblock}{Warning}
-    This is an alert block.
-  \end{alertblock}
-
-  \begin{exampleblock}{Example}
-    This is an example block.
+  \vspace{0.3cm}
+  \begin{exampleblock}{Przykłady z życia}
+    Konkretna ilustracja: bank, notariusz, arkusz Google.
   \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Two columns}
-  \begin{columns}
-    \column{0.5\textwidth}
-      Left column content here.
+% Concept slide: bullets + alertblock (problem / risk)
+\begin{frame}{Drugi temat}
+  \begin{itemize}
+    \item Mechanizm w trzech krokach
+    \item Konsekwencja mechanizmu dla użytkownika
+    \item Skutek dla całej sieci
+  \end{itemize}
+  \vspace{0.3cm}
+  \begin{alertblock}{Problem}
+    Krótkie napięcie pchające narrację dalej.
+  \end{alertblock}
+\end{frame}
 
-    \column{0.5\textwidth}
-      Right column content here.
+% ================================================================
+\section{Drugi temat}
+
+% Two-column A vs B comparison (no helper block needed)
+\begin{frame}{Porównanie}
+  \begin{columns}
+    \column{0.48\textwidth}
+      \begin{block}{Wariant A}
+        \begin{itemize}
+          \item Cecha pierwsza
+          \item Cecha druga
+        \end{itemize}
+      \end{block}
+    \column{0.48\textwidth}
+      \begin{alertblock}{Wariant B}
+        \begin{itemize}
+          \item Wada pierwsza
+          \item Wada druga
+        \end{itemize}
+      \end{alertblock}
   \end{columns}
 \end{frame}
 
-\section{Conclusion}
+% Math slide: named formula in block + worked example in exampleblock
+\begin{frame}{Wzór}
+  \begin{block}{Nazwa wzoru}
+    \[
+      y = f(x)
+    \]
+    Krótki opis, czym jest wzór i co reprezentują zmienne.
+  \end{block}
+  \vspace{0.3cm}
+  \begin{exampleblock}{Przykład}
+    Konkretne liczby wpasowane we wzór: $f(2) = 4$.
+  \end{exampleblock}
+\end{frame}
 
-\begin{frame}{Conclusion}
-  \begin{itemize}
-    \item Summary point one
-    \item Summary point two
-  \end{itemize}
+% ================================================================
+\section{Podsumowanie}
+
+\begin{frame}{Podsumowanie}
+  \begin{block}{Główna myśl}
+    \begin{itemize}
+      \item Jedno zdanie streszczające pierwszą sekcję
+      \item Jedno zdanie streszczające drugą sekcję
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+% ================================================================
+\begin{frame}[plain]
+  \begin{center}
+    \vfill
+    {\Huge\bfseries\color{stplwhite} gn}
+    \vfill
+  \end{center}
 \end{frame}
 
 \end{document}

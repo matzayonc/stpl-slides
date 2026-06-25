@@ -2,40 +2,11 @@
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage{listings}
 
 %% ---- Reveal everything one step at a time, in document order ----
 %% The brand blocks are tcolorbox-based and ignore the <+-> default, so we
 %% drive every reveal explicitly with \pause (a single, consistent mechanism).
 \beamerdefaultoverlayspecification{}
-
-%% ---- Rust-ish language + code style ----
-\lstdefinelanguage{Rust}{
-  keywords={fn,pub,struct,impl,trait,let,mut,self,Self,match,return,for,in,
-            if,else,enum,use,mod,as,where,Option,Result,Some,None,
-            u8,u16,u32,u64,i64,u128,bool,String,Vec},
-  morecomment=[l]{//},
-  morestring=[b]",
-  sensitive=true,
-}
-\lstset{
-  basicstyle=\ttfamily\scriptsize\color{stplwhite},
-  backgroundcolor=\color{stplcard},
-  keywordstyle=\color{stplred}\bfseries,
-  commentstyle=\color{stplmuted},
-  stringstyle=\color{stplmuted},
-  showstringspaces=false,
-  keepspaces=true,
-  columns=fixed,
-  basewidth=0.46em,
-  frame=leftline,
-  framerule=2pt,
-  rulecolor=\color{stplred},
-  xleftmargin=0.6em,
-  aboveskip=0.4em,
-  belowskip=0.2em,
-  language=Rust,
-}
 
 \title{One Source of Truth}
 \subtitle{Shared logic for backend and frontend}

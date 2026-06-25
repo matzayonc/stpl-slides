@@ -6,6 +6,7 @@
 \usepackage{tikz}
 \usetikzlibrary{calc}
 \usepackage[most]{tcolorbox}
+\usepackage{listings}
 
 %% ---- Superteam Poland brand colors ----
 \definecolor{stpldark}{HTML}{0B0E0F}   % near-black background
@@ -97,20 +98,52 @@
   },
 }
 \renewenvironment{block}[1]{%
+  \pause%
   \begin{tcolorbox}[stplbase, colframe=stplred, title={#1}]%
 }{%
   \end{tcolorbox}%
 }
 \renewenvironment{alertblock}[1]{%
+  \pause%
   \begin{tcolorbox}[stplbase, colframe=stplred!75!black,
     colback=stplred!10!stplcard, title={#1}]%
 }{%
   \end{tcolorbox}%
 }
 \renewenvironment{exampleblock}[1]{%
+  \pause%
   \begin{tcolorbox}[stplbase, colframe=stplmuted, title={#1}]%
 }{%
   \end{tcolorbox}%
+}
+
+%% ---- Code listings (Rust + Anchor) ----
+\lstdefinelanguage{Rust}{
+  keywords={fn,pub,struct,impl,trait,let,mut,self,Self,match,return,for,in,
+            if,else,enum,use,mod,as,where,Option,Result,Some,None,Ok,Err,
+            u8,u16,u32,u64,i64,u128,bool,String,Vec,Pubkey,Context,msg,vec,
+            Account,Signer,Program,System,has_one,init,payer,space,seeds,bump},
+  morecomment=[l]{//},
+  morestring=[b]",
+  sensitive=true,
+}
+\lstset{
+  basicstyle=\ttfamily\scriptsize\color{stplwhite},
+  backgroundcolor=\color{stplcard},
+  keywordstyle=\color{stplred}\bfseries,
+  commentstyle=\color{stplmuted},
+  stringstyle=\color{stplmuted},
+  showstringspaces=false,
+  keepspaces=true,
+  columns=fixed,
+  basewidth=0.46em,
+  frame=leftline,
+  framerule=2pt,
+  rulecolor=\color{stplred},
+  xleftmargin=0.6em,
+  aboveskip=0.4em,
+  belowskip=0.2em,
+  language=Rust,
 }
 
 %% ---- Table of contents ----

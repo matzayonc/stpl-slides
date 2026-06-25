@@ -28,6 +28,23 @@ truth, this file only points to them.
 `0_why.tex` — when an answer about *style* is unclear, that file is the
 working example of what `style.md` describes.
 
+## Technical reference (Solana / Anchor)
+
+`reference/skill/` holds reference docs the AI uses for technical
+correctness when writing slide content. Consult it before claiming
+anything specific about Anchor, IDL codegen, accounts, payments,
+testing, security, or common errors:
+
+- `anchor/`, `programs/`, `kit/`, `surfpool/` — framework-specific notes
+- `common-errors.md`, `compatibility-matrix.md` — pitfalls and version
+  alignment
+- `confidential-transfers.md`, `payments.md`, `security.md`,
+  `testing.md`, `idl-codegen.md`, `kit-web3-interop.md`,
+  `frontend-framework-kit.md`, `resources.md` — topic deep-dives
+
+Treat these as authoritative for facts; treat `style.md` as authoritative
+for how those facts get presented.
+
 ## Common tasks
 
 - **New deck**: create `presentations/<index>_<slug>.tex`, start with

@@ -2,6 +2,8 @@
 
 The source of truth for *content* and *narrative* in this slide deck repository.
 Pairs with `branding.md` (visual chrome) and `README.md` (build & filenames).
+See [`style-decisions.md`](style-decisions.md) for the interview that produced
+this doc — the *why* behind each rule lives there.
 
 If a rule here conflicts with one of those files, this document wins for narrative
 decisions; `branding.md` wins for colors, spacing, and visual treatment.
@@ -142,6 +144,22 @@ Generated automatically by `\AtBeginSection`. Do not author them by hand.
 Pick section names that read as standalone phrases — they appear large on
 the divider slide.
 
+### 5.4 Closing slide (`gn`)
+
+Every deck ends with the `gn` sign-off slide, immediately before
+`\end{document}`. Do not add section headings or any content after it.
+
+```latex
+% ================================================================
+\begin{frame}[plain]
+  \begin{center}
+    \vfill
+    {\Huge\bfseries\color{stplwhite} gn}
+    \vfill
+  \end{center}
+\end{frame}
+```
+
 ---
 
 ## 6. Introducing terms
@@ -176,6 +194,21 @@ When a concept is genuinely hard (consensus, cryptographic signatures, AMM
 math), say so on the slide. A muted line such as `\textcolor{stplmuted}{To
 jest trudne — zatrzymaj film i wróć do tego slajdu}` reframes struggle as
 expected, not as failure, and is more honest than glossing.
+
+### 6.3 Acronyms on first use
+
+When a term is commonly referenced by an acronym, the debut form pairs the
+full name with the acronym in parentheses, both inside the same `\textbf{}`:
+
+```latex
+\textbf{Byzantine Fault Tolerance (BFT)}
+\textbf{Automated Market Maker (AMM)}
+\textbf{Loan-to-Value (LTV)}
+```
+
+After the debut, use the acronym alone (`BFT`, `AMM`, `LTV`). Do not repeat
+the expansion. If a later lesson references the term and you are unsure
+whether the audience has seen it, treat it as new and re-expand.
 
 ---
 

@@ -1,0 +1,222 @@
+\input{preamble}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usetikzlibrary{positioning, arrows.meta}
+
+\title{Paradygmat Web3}
+\subtitle{Solana Bootcamp --- dla dewelopera Web2}
+\author{}
+\institute{Superteam Poland}
+\date{\today}
+
+\begin{document}
+
+\maketitleframe
+
+\begin{frame}{Plan}
+  \tableofcontents
+\end{frame}
+
+% ================================================================
+\section{Web2 vs Web3}
+
+% TODO: 1. Z wizji do warsztatu --- transition (no helper block)
+\begin{frame}{Z wizji do warsztatu}
+  \begin{itemize}
+    \item Poprzednia lekcja pokazała \textbf{co} powstaje na Solanie
+    \item Teraz pytanie zmienia się na \textbf{jak} pracuje dev Web3
+    \item Punkt wyjścia --- co znika z Web2 stacku?
+  \end{itemize}
+\end{frame}
+
+% TODO: 2. Web2 w jednym zdaniu --- problem hook (alertblock: jeden właściciel prawdy)
+\begin{frame}{Web2 w jednym zdaniu}
+  \begin{itemize}
+    \item Klient pyta \textbf{centralny serwer}, który ufa sam sobie
+    \item Baza danych \textbf{pod kontrolą dostawcy} --- prywatna
+    \item Aplikacja działa, dopóki działa operator
+  \end{itemize}
+  \vspace{0.3cm}
+  \begin{alertblock}{Jeden właściciel prawdy}
+    Firma decyduje, co jest w bazie. Trzeba jej zaufać, że nie kłamie.
+  \end{alertblock}
+\end{frame}
+
+% TODO: 3. Web3 w jednym zdaniu --- mechanism (exampleblock: backend staje się programem)
+\begin{frame}{Web3 w jednym zdaniu}
+  \begin{itemize}
+    \item Klient wysyła \textbf{podpisaną transakcję} do sieci
+    \item Logika żyje on-chain jako \textbf{program}
+    \item Dane w koncie blockchain --- \textbf{bezaufaniowe wykonanie}
+  \end{itemize}
+  \vspace{0.3cm}
+  \begin{exampleblock}{Backend staje się programem}
+    Nie ma serwera firmy --- jest klaster węzłów, który każdy może odpytać.
+  \end{exampleblock}
+\end{frame}
+
+% TODO: 4. RPC node --- term debut (block; analogia: bankomat dowolnej sieci)
+\begin{frame}{RPC node}
+  \begin{itemize}
+    \item Frontend potrzebuje okna na łańcuch --- skądś czytać stan i wysyłać transakcje
+    \item Setki publicznych węzłów udostępniają to samo API HTTP/JSON
+    \item Analogia --- \textbf{bankomat dowolnej sieci}, nie obchodzi cię który, saldo to samo
+    \item Nazwa techniczna --- \textbf{Remote Procedure Call (RPC)}
+  \end{itemize}
+  \vspace{0.3cm}
+  \begin{block}{Definicja}
+    \textbf{RPC node} --- węzeł sieci, który przyjmuje zapytania klienta
+    i zwraca aktualny stan lub przekazuje transakcję do klastra.
+  \end{block}
+\end{frame}
+
+% ================================================================
+\section{Co się zmienia}
+
+% TODO: 5. Read vs Write --- A-vs-B opposition (no helper block)
+\begin{frame}{Read vs Write}
+  \begin{columns}
+    \column{0.48\textwidth}
+      \begin{block}{Read}
+        \begin{itemize}
+          \item Gratis, bez podpisu
+          \item Dowolny węzeł RPC
+          \item Odpowiedź natychmiast
+          \item Np. podgląd salda konta
+        \end{itemize}
+      \end{block}
+
+    \column{0.48\textwidth}
+      \begin{alertblock}{Write}
+        \begin{itemize}
+          \item \textbf{Transakcja} podpisana kluczem
+          \item Opłata sieciowa za włączenie
+          \item Czeka na potwierdzenie klastra
+          \item Np. wysłanie tokena
+        \end{itemize}
+      \end{alertblock}
+  \end{columns}
+\end{frame}
+
+% TODO: 6. Bezserwerowa architektura --- benefit + ryzyko (alertblock: kod publiczny i niezmienny)
+\begin{frame}{Bezserwerowa architektura}
+  \begin{itemize}
+    \item Kod nie żyje na \textbf{twoim} serwerze --- wykonuje go cała sieć
+    \item Brak uptime'u, deploymentu, utrzymania VPS
+    \item Brak bazy danych pod kontrolą --- stan jest publiczny on-chain
+    \item Dev pisze logikę, nie infrastrukturę
+  \end{itemize}
+  \vspace{0.3cm}
+  \begin{alertblock}{Druga strona medalu}
+    Kod publiczny i niezmienny --- błąd też publiczny i trudny do cofnięcia.
+  \end{alertblock}
+\end{frame}
+
+% TODO: 7. Portfel jako tożsamość --- soft debut kluczy (exampleblock: podpis odręczny)
+%       Asymmetric crypto deep-dive lives in L6; here keep it intuitive.
+\begin{frame}{Portfel jako tożsamość}
+  \begin{itemize}
+    \item Brak rejestracji i hasła --- jest \textbf{para kluczy}
+    \item \textbf{Klucz publiczny} działa jak adres konta w sieci
+    \item \textbf{Klucz prywatny} podpisuje każdą transakcję
+    \item Portfel przechowuje klucze i podpisuje w imieniu użytkownika
+  \end{itemize}
+  \vspace{0.3cm}
+  \begin{exampleblock}{Analogia}
+    Podpis odręczny nie do podrobienia --- ale i bez opcji resetu.
+  \end{exampleblock}
+\end{frame}
+
+% TODO: 8. Konsekwencje UX --- (alertblock: utrata klucza = utrata dostępu)
+\begin{frame}{Konsekwencje UX}
+  \begin{itemize}
+    \item Brak ekranu \textit{,,zapomniałem hasła''} --- nie ma kto resetować
+    \item Tożsamość \textbf{przenośna} --- jeden portfel = login do tysięcy aplikacji
+    \item User jest \textbf{właścicielem} swojej tożsamości, nie operator
+    \item Onboarding krótszy --- bez formularzy i maili weryfikacyjnych
+  \end{itemize}
+  \vspace{0.3cm}
+  \begin{alertblock}{Cena suwerenności}
+    Utrata klucza = utrata dostępu --- projektujemy świadomie
+    (seed phrase, portfele sprzętowe).
+  \end{alertblock}
+\end{frame}
+
+% TODO: 9. Mapa stacku --- single TikZ visual: Frontend / Wallet Adapter / RPC / Klaster / Program / Konta
+%       Override <+-> for this slide --- it lands all at once.
+\begin{frame}<1>{Mapa stacku Web3}
+  \vspace{0.2cm}
+  \begin{center}
+    \begin{tikzpicture}[
+        node distance=0.45cm,
+        every node/.style={font=\footnotesize\bfseries},
+        box/.style={
+          draw=stplred, line width=1pt,
+          fill=stplcard, text=stplwhite,
+          rounded corners=2pt,
+          minimum width=2.0cm, minimum height=0.85cm,
+          align=center,
+        },
+        chain/.style={
+          -latex, draw=stplred, line width=1pt,
+        },
+        label/.style={
+          font=\scriptsize\itshape, text=stplmuted,
+        },
+      ]
+      \node[box] (fe) {Frontend};
+      \node[box, right=of fe] (wa) {Wallet\\Adapter};
+      \node[box, right=of wa] (rpc) {RPC};
+      \node[box, below=1.2cm of rpc] (cluster) {Klaster};
+      \node[box, left=of cluster] (prog) {Program};
+      \node[box, left=of prog] (acc) {Konta};
+
+      \draw[chain] (fe) -- (wa);
+      \draw[chain] (wa) -- (rpc);
+      \draw[chain] (rpc) -- (cluster);
+      \draw[chain] (cluster) -- (prog);
+      \draw[chain] (prog) -- (acc);
+
+      \node[label, below=0.05cm of fe] {UI};
+      \node[label, below=0.05cm of wa] {podpis};
+      \node[label, below=0.05cm of rpc] {okno};
+      \node[label, above=0.05cm of cluster] {sieć};
+      \node[label, above=0.05cm of prog] {logika};
+      \node[label, above=0.05cm of acc] {stan};
+    \end{tikzpicture}
+  \end{center}
+  \vspace{0.2cm}
+  \begin{center}
+    \textcolor{stplmuted}{\small Klient $\rightarrow$ podpis $\rightarrow$ RPC $\rightarrow$ klaster $\rightarrow$ program $\rightarrow$ konta}
+  \end{center}
+\end{frame}
+
+% ================================================================
+\section{Podsumowanie}
+
+% TODO: 10. Podsumowanie --- recap czterech różnic (Web3 vs Web2)
+\begin{frame}{Podsumowanie}
+  \begin{itemize}
+    \item Brak serwera tożsamości --- \textbf{portfel} jest loginem
+    \item \textbf{RPC} zamiast prywatnego API --- wymienne, publiczne
+    \item Stan \textbf{publiczny on-chain} zamiast prywatnej bazy
+    \item Read gratis, write z podpisem i opłatą
+  \end{itemize}
+  \vspace{0.4cm}
+  \begin{center}
+    \textcolor{stplmuted}{Wiesz \textbf{JAK} pracuje Web3 dev.
+    Od kolejnej lekcji --- w jakim języku.}
+  \end{center}
+\end{frame}
+
+% ================================================================
+\begin{frame}[plain]
+  \begin{center}
+    \vfill
+    {\Huge\bfseries\color{stplwhite} gn}
+    \vfill
+  \end{center}
+\end{frame}
+
+\end{document}

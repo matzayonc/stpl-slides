@@ -2,35 +2,6 @@
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage{listings}
-
-%% ---- Rust-ish language + code style (spójny z 5_shared_core / 6_rust) ----
-\lstdefinelanguage{Rust}{
-  keywords={fn,pub,struct,impl,trait,let,mut,self,Self,match,return,for,in,
-            if,else,enum,use,mod,as,where,Option,Result,Some,None,Ok,Err,
-            u8,u16,u32,u64,i64,u128,bool,String,Vec,Pubkey,Context,msg,vec},
-  morecomment=[l]{//},
-  morestring=[b]",
-  sensitive=true,
-}
-\lstset{
-  basicstyle=\ttfamily\scriptsize\color{stplwhite},
-  backgroundcolor=\color{stplcard},
-  keywordstyle=\color{stplred}\bfseries,
-  commentstyle=\color{stplmuted},
-  stringstyle=\color{stplmuted},
-  showstringspaces=false,
-  keepspaces=true,
-  columns=fixed,
-  basewidth=0.46em,
-  frame=leftline,
-  framerule=2pt,
-  rulecolor=\color{stplred},
-  xleftmargin=0.6em,
-  aboveskip=0.4em,
-  belowskip=0.2em,
-  language=Rust,
-}
 
 \title{Model Kont}
 \subtitle{Solana Bootcamp --- wszystko jest kontem}
@@ -40,9 +11,7 @@
 
 \begin{document}
 
-\begin{frame}
-  \titlepage
-\end{frame}
+\maketitleframe
 
 \begin{frame}{Plan}
   \tableofcontents
@@ -102,9 +71,9 @@ struct Account {
       \end{block}
   \end{columns}
   \vspace{0.3cm}
-  \begin{itemize}
-    \item Efekt: jeden program obsługuje miliony kont danych
-  \end{itemize}
+  \begin{center}
+    \textcolor{stplmuted}{Jeden program obsługuje miliony kont danych.}
+  \end{center}
 \end{frame}
 
 \begin{frame}{Vs Ethereum}
@@ -205,16 +174,17 @@ struct Account {
 \section{W praktyce}
 
 \begin{frame}{Explorer}
+  \begin{itemize}
+    \item Z Lekcji 2: RPC to okno na łańcuch --- Explorer jest jego ładną wersją
+    \item Każde pole konta widzisz na żywo, bez własnego węzła
+    \item \texttt{adres} --- gdzie konto żyje
+    \item \texttt{owner} --- który program nim rządzi
+    \item \texttt{lamports} oraz \texttt{data} / \texttt{executable} --- saldo, treść, kod vs dane
+  \end{itemize}
+  \vspace{0.25cm}
   \begin{exampleblock}{Demo --- Solana Explorer}
     Otwórz realne konto i odczytaj jego pola wprost z łańcucha.
   \end{exampleblock}
-  \vspace{0.2cm}
-  \begin{itemize}
-    \item \texttt{adres} --- gdzie konto żyje
-    \item \texttt{owner} --- który program nim rządzi
-    \item \texttt{lamports} --- saldo i depozyt rent
-    \item \texttt{data} oraz \texttt{executable} --- dane vs kod
-  \end{itemize}
 \end{frame}
 
 \begin{frame}{Podsumowanie}
@@ -228,16 +198,6 @@ struct Account {
   \begin{exampleblock}{Analogia na koniec}
     Konto to plik; program to aplikacja z prawem zapisu do tego pliku.
   \end{exampleblock}
-\end{frame}
-
-% ================================================================
-\begin{frame}[plain]
-  \begin{center}
-    \vfill
-    {\large\color{stplmuted} Najtrudniejszy temat --- następny}\\[0.45cm]
-    {\Huge\bfseries\color{stplwhite} PDA na sesji\\[0.2cm] live.}
-    \vfill
-  \end{center}
 \end{frame}
 
 % ================================================================
