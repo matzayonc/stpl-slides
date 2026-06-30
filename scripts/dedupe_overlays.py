@@ -41,14 +41,20 @@ def keep_indices(hashes: list[str]) -> list[int]:
     return keep
 
 
-def dedupe(pdf: Path) -> tuple[int, int]:
+def dropped_indices(hashes: list[str], keep: list[int]) -> list[int]:
+    keep_set = set(keep)
+    return [i for i in range(1, len(hashes) + 1) if i not in keep_set]
+
+
+def dedupe(pdf: Path) -> tuple[int, int, list[int]]:
     hashes = page_hashes(pdf)
     total = len(hashes)
     keep = keep_indices(hashes)
     dropped = total - len(keep)
     if dropped == 0:
-        return total, 0
+        return total, 0, []
 
+    dropped_pages = dropped_indices(hashes, keep)
     page_list = ",".join(str(i) for i in keep)
     with tempfile.NamedTemporaryFile(suffix=".pdf", dir=pdf.parent, delete=False) as tmp:
         out_path = Path(tmp.name)
@@ -61,7 +67,7 @@ def dedupe(pdf: Path) -> tuple[int, int]:
     except Exception:
         out_path.unlink(missing_ok=True)
         raise
-    return total, dropped
+    return total, dropped, dropped_pages
 
 
 def main(argv: list[str]) -> int:
@@ -75,8 +81,12 @@ def main(argv: list[str]) -> int:
             print(f"skip: {pdf} (not a file)", file=sys.stderr)
             rc = 1
             continue
-        total, dropped = dedupe(pdf)
-        print(f"{pdf.name}: {total} pages, dropped {dropped}")
+        total, dropped, dropped_pages = dedupe(pdf)
+        if dropped:
+            page_list = ",".join(str(i) for i in dropped_pages)
+            print(f"{pdf.name}: {total} pages, dropped {dropped} (pre-dedup indices: {page_list})")
+        else:
+            print(f"{pdf.name}: {total} pages, dropped 0")
     return rc
 
 

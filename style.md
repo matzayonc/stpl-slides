@@ -108,10 +108,35 @@ stack blocks vertically instead.
 
 ### 4.5 Animation
 
-The preamble sets `\beamerdefaultoverlayspecification{<+->}`. **Keep it.**
-Bullets reveal one at a time so the speaker controls pace and the student's
-eye does not race ahead. Override only when a slide is a table, a static
-quote, or a single visual you want to land all at once.
+The preamble sets `\beamerdefaultoverlayspecification{<+->}`. **Keep it as
+the default.** Bullets reveal one at a time so the speaker controls pace
+and the student's eye does not race ahead. Two opt-outs exist for cases
+where the default does the wrong thing:
+
+**(a) Static frame — diagram or table that lands all at once.** Open with
+`\begin{frame}<1>{Tytuł}`. The whole frame is rendered on a single overlay
+and no `<+->` ticks fire. Use this for: a pure TikZ diagram with no
+synchronized bullets, a table, a static quote, a single visual the speaker
+wants to talk over without clicking. Existing examples: `2_amm.tex:215`,
+`3_lending.tex:240` (the Utilization Rate chart), `1_paradigm.tex:403,450`
+(the Web3 stack map).
+
+**(b) Manually-choreographed frame — TikZ stages synchronized with
+bullets.** When a diagram reveals in step with the surrounding itemize,
+the default `<+->` and the hand-numbered `\begin{scope}[visible on=<N->]`
+counts drift apart silently when bullets are added or removed. Convention:
+write explicit `\item<N->` overlays on **every** bullet that needs to
+sync, matching the TikZ scope numbers exactly. The cost is verbosity;
+the benefit is that the bullets and the diagram share one source of
+truth — adding a bullet no longer silently breaks the diagram. The
+worked example is `1_paradigm.tex:198-277` ("Read vs Write"), which
+choreographs eight overlays across two columns. Reach for this only
+when the diagram actually needs to advance with the bullets — if the
+diagram is static, prefer (a).
+
+When the post-build `scripts/dedupe_overlays.py` reports dropped pages on
+an opt-out frame, the author miscounted overlays. Fix the source rather
+than relying on the script.
 
 ---
 
