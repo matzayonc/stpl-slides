@@ -7,7 +7,6 @@
 \subtitle{Solana Bootcamp --- Phantom, devnet, Explorer}
 \author{}
 \institute{Superteam Poland}
-\date{\today}
 
 \begin{document}
 
@@ -20,12 +19,12 @@
 % ================================================================
 \section{Klucze}
 
-% TODO: 1. Portfel --- twój login --- hook back to Lekcja 2 (no helper block)
+% TODO: 1. Portfel --- twój login --- hook back to Lekcja 3 (no helper block)
 \begin{frame}{Portfel --- twój login}
   \begin{itemize}
-    \item Za chwilę student zakłada \textbf{własną tożsamość} w sieci
+    \item Za chwilę powstaje \textbf{własna tożsamość} w sieci
     \item Ten sam portfel podpisze każdą transakcję do końca kursu
-    \item Wracamy do pytania z Lekcji 2 --- czemu nie ma hasła?
+    \item Czemu nie ma hasła?
   \end{itemize}
 \end{frame}
 
@@ -49,17 +48,14 @@
 \begin{frame}{Podpis}
   \begin{itemize}
     \item \textbf{Klucz prywatny} liczy \textbf{podpis kryptograficzny} nad danymi transakcji
-    \item Każdy w sieci weryfikuje ten podpis \textbf{kluczem publicznym} nadawcy
-    \item Sam podpis niczego nie zdradza o kluczu prywatnym --- nie da się go cofnąć
-    \item Jeden klucz = jedna tożsamość = jeden unikalny zestaw podpisów
+    \item Każdy w sieci weryfikuje go \textbf{kluczem publicznym} nadawcy
+    \item Sam podpis nie zdradza klucza prywatnego --- nie da się go cofnąć
   \end{itemize}
   \vspace{0.25cm}
   \begin{block}{Trzy własności podpisu}
-    \begin{itemize}
-      \item \textbf{Autentyczność} --- podpis mógł powstać tylko z tego klucza
-      \item \textbf{Integralność} --- zmiana jednego bajtu unieważnia podpis
-      \item \textbf{Niezaprzeczalność} --- autor nie wyprze się transakcji
-    \end{itemize}
+    \textbf{Autentyczność} (tylko ten klucz) $\cdot$
+    \textbf{integralność} (zmieniony bajt unieważnia) $\cdot$
+    \textbf{niezaprzeczalność} (autor nie wyprze się).
   \end{block}
 \end{frame}
 
@@ -79,16 +75,14 @@
 % TODO: 5. Seed phrase --- jedna zasada bezpieczeństwa (alertblock: kto ma seed, ma środki)
 \begin{frame}{Seed phrase}
   \begin{itemize}
-    \item \textbf{Seed phrase} --- 12 lub 24 angielskie słowa generowane przy zakładaniu portfela
+    \item \textbf{Seed phrase} --- 12 lub 24 słowa generowane przy zakładaniu portfela
     \item Z tych słów deterministycznie powstają \textbf{wszystkie} klucze prywatne
-    \item Nigdy nie trafia online --- bez wklejania, bez screenshotów, bez chmury
-    \item Zapis offline --- kartka w sejfie lub manager haseł działający lokalnie
-    \item Na devnecie ryzyka nie ma, ale nawyk wyrabia się od pierwszego portfela
+    \item Nigdy online --- bez wklejania, bez screenshotów, bez chmury
+    \item Zapis offline --- kartka w sejfie lub lokalny manager haseł
   \end{itemize}
   \vspace{0.25cm}
   \begin{alertblock}{Kto ma seed, ma środki}
-    Seed phrase to jak klucz do mieszkania, którego nie da się dorobić ---
-    nie istnieje procedura ,,zapomniałem''. Wycieka raz, na zawsze.
+    Nie istnieje procedura ,,zapomniałem''. Wycieka raz, na zawsze.
   \end{alertblock}
 \end{frame}
 
@@ -143,7 +137,7 @@
     \item Otwórz \texttt{explorer.solana.com} i przełącz sieć na \textbf{Devnet}
     \item Znajdź transakcję po podpisie skopiowanym z Phantom
     \item Zobacz status \textit{finalized}, opłatę i listę kont biorących udział
-    \item To dokładnie ten \textbf{write} z Lekcji 2 --- podpisany, opłacony, atomowy
+    \item To dokładnie ten \textbf{write} z Lekcji 1 --- podpisany, opłacony, atomowy
   \end{itemize}
   \vspace{0.25cm}
   \begin{exampleblock}{Co zobaczysz w Explorerze}

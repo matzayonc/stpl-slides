@@ -8,7 +8,6 @@
 \subtitle{Solana Bootcamp --- dla dewelopera Web2}
 \author{}
 \institute{Superteam Poland}
-\date{\today}
 
 \begin{document}
 
@@ -24,8 +23,8 @@
 % TODO: 1. Z wizji do warsztatu --- transition (no helper block)
 \begin{frame}{Z wizji do warsztatu}
   \begin{itemize}
-    \item Poprzednia lekcja pokazała \textbf{co} powstaje na Solanie
-    \item Teraz pytanie zmienia się na \textbf{jak} pracuje dev Web3
+    \item Lekcja 0 pokazała, \textbf{czemu} blockchain w ogóle istnieje
+    \item Teraz: \textbf{jak} to działa od strony dewelopera
     \item Punkt wyjścia --- co znika z Web2 stacku?
   \end{itemize}
 \end{frame}
@@ -192,6 +191,61 @@
   \end{center}
 \end{frame}
 
+\begin{frame}<1>{Mapa stacku Web3}
+  \vspace{0.2cm}
+  \begin{center}
+    \begin{tikzpicture}[
+        node distance=0.45cm,
+        every node/.style={font=\footnotesize\bfseries},
+        box/.style={
+          draw=stplred, line width=1pt,
+          fill=stplcard, text=stplwhite,
+          rounded corners=2pt,
+          minimum width=2.0cm, minimum height=0.85cm,
+          align=center,
+        },
+        devbox/.style={
+          draw=stplred, line width=1pt,
+          fill=stplred, text=stplwhite,
+          rounded corners=2pt,
+          minimum width=2.0cm, minimum height=0.85cm,
+          align=center,
+        },
+        chain/.style={
+          -latex, draw=stplred, line width=1pt,
+        },
+        label/.style={
+          font=\scriptsize\itshape, text=stplmuted,
+        },
+      ]
+      \node[devbox] (fe) {Frontend};
+      \node[box, right=of fe] (wa) {Wallet\\Adapter};
+      \node[box, right=of wa] (rpc) {RPC};
+      \node[box, below=1.2cm of rpc] (cluster) {Klaster};
+      \node[devbox, left=of cluster] (prog) {Program};
+      \node[box, left=of prog] (acc) {Konta};
+
+      \draw[chain] (fe) -- (wa);
+      \draw[chain] (wa) -- (rpc);
+      \draw[chain] (rpc) -- (cluster);
+      \draw[chain] (cluster) -- (prog);
+      \draw[chain] (prog) -- (acc);
+
+      \node[label, below=0.05cm of fe] {UI};
+      \node[label, below=0.05cm of wa] {podpis};
+      \node[label, below=0.05cm of rpc] {okno};
+      \node[label, above=0.05cm of cluster] {sieć};
+      \node[label, above=0.05cm of prog] {logika};
+      \node[label, above=0.05cm of acc] {stan};
+    \end{tikzpicture}
+  \end{center}
+  \vspace{0.2cm}
+  \begin{center}
+    \textcolor{stplred}{\small\bfseries Dev pisze Frontend i Program} ---
+    \textcolor{stplmuted}{\small reszta stacku jest gotowa}
+  \end{center}
+\end{frame}
+
 % ================================================================
 \section{Podsumowanie}
 
@@ -205,8 +259,8 @@
   \end{itemize}
   \vspace{0.4cm}
   \begin{center}
-    \textcolor{stplmuted}{Wiesz \textbf{JAK} pracuje Web3 dev.
-    Od kolejnej lekcji --- w jakim języku.}
+    \uncover<5->{\textcolor{stplmuted}{Wiesz \textbf{JAK} pracuje Web3 dev.
+    Od kolejnej lekcji --- co się na tym modelu buduje: DeFi.}}
   \end{center}
 \end{frame}
 

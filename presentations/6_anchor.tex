@@ -7,7 +7,6 @@
 \subtitle{Solana Bootcamp --- framework programu on-chain}
 \author{}
 \institute{Superteam Poland}
-\date{\today}
 
 \begin{document}
 
@@ -24,7 +23,7 @@
 \begin{frame}{Co user wysyła}
   \begin{itemize}
     \item Frontend pokazuje przycisk ,,wymień'' --- klik i coś leci do sieci
-    \item Z Lekcji 2: read jest gratis, write wymaga czegoś więcej
+    \item Z Lekcji 1: read jest gratis, write wymaga czegoś więcej
     \item Węzeł nie ufa frontendowi --- musi sam sprawdzić każdy bajt
     \item Pytanie nie brzmi ,,co'' --- brzmi ,,w jakiej formie''
   \end{itemize}
@@ -40,7 +39,7 @@
     \item Pojedyncze wywołanie programu to \textbf{instrukcja}: trójka (program, konta, dane)
     \item Koperta z jedną lub kilkoma instrukcjami to \textbf{transakcja}
     \item Koperta niesie też listę \textbf{signerów} i \textbf{opłatę} dla walidatora
-    \item Read z Lekcji 2 nie wymaga koperty --- każdy write owszem
+    \item Read z Lekcji 1 nie wymaga koperty --- każdy write owszem
   \end{itemize}
   \vspace{0.25cm}
   \begin{block}{Definicja}
@@ -139,7 +138,7 @@ pub mod licznik {
     \item Każda instrukcja ma osobną \texttt{struct} z listą wymaganych kont
     \item \texttt{\#[derive(Accounts)]} generuje walidację z deklaracji pól
     \item Constraints sprawdzane \textbf{przed} ciałem instrukcji
-    \item Z Lekcji 4: owner pilnuje danych, signer autoryzuje zmianę
+    \item Z Lekcji 5: owner pilnuje danych, signer autoryzuje zmianę
   \end{itemize}
   \begin{exampleblock}{Efekt}
     Luka łapana w deklaracji, nie w ręcznym \texttt{if} --- middleware walidujący

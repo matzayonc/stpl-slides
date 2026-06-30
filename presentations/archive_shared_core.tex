@@ -12,7 +12,6 @@
 \subtitle{Shared logic for backend and frontend}
 \author{}
 \institute{Rust Meetup}
-\date{\the\year}
 
 \begin{document}
 
@@ -167,7 +166,6 @@ fn parse<T: Pod>(bytes: &[u8]) -> Option<T> {
     \includegraphics[height=4.2cm]{images/diag-payoff.png}
   \end{center}
   \vspace{0.1cm}
-  \pause
   \begin{alertblock}{The opening bug is now unrepresentable}
     Preview and commit run \textbf{byte-identical code}. There is no second
     implementation left to drift.
@@ -264,7 +262,6 @@ error[E0599]: no method named `borrow` found
         \end{itemize}
       \end{block}
     \column{0.48\textwidth}
-      \pause
       \begin{alertblock}{Overkill}
         \begin{itemize}
           \item Trivial client logic

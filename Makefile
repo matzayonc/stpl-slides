@@ -12,9 +12,10 @@ PRES ?= $(basename $(notdir $(firstword $(SOURCES))))
 
 all: $(PDFS)
 
-$(DIST_DIR)/%.pdf: $(PRES_DIR)/%.tex preamble.tex
+$(DIST_DIR)/%.pdf: $(PRES_DIR)/%.tex preamble.tex scripts/dedupe_overlays.py
 	mkdir -p $(BUILD_DIR) $(DIST_DIR)
 	latexmk $<
+	python3 scripts/dedupe_overlays.py $@
 
 open: $(DIST_DIR)/$(PRES).pdf
 	xdg-open $<

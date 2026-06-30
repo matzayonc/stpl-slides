@@ -4,7 +4,14 @@
 \renewcommand{\sfdefault}{\rmdefault}
 \usepackage{graphicx}
 \usepackage{tikz}
-\usetikzlibrary{calc}
+\usetikzlibrary{calc,positioning}
+\tikzset{
+  invisible/.style={opacity=0, text opacity=0},
+  visible on/.style={alt={#1{}{invisible}}},
+  alt/.code args={<#1>#2#3}{%
+    \alt<#1>{\pgfkeysalso{#2}}{\pgfkeysalso{#3}}%
+  },
+}
 \usepackage[most]{tcolorbox}
 \usepackage{listings}
 
@@ -164,6 +171,9 @@
   \end{beamercolorbox}%
 }
 \setbeamertemplate{navigation symbols}{}
+
+%% ---- Title page defaults (decks may override) ----
+\date{\the\year}
 
 %% ---- Title frame helper (uses hero background) ----
 \newcommand{\maketitleframe}{%
