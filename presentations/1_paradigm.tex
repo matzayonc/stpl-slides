@@ -36,7 +36,39 @@
     \item Baza danych \textbf{pod kontrolą dostawcy} --- prywatna
     \item Aplikacja działa, dopóki działa operator
   \end{itemize}
-  \vspace{0.3cm}
+  \vspace{0.2cm}
+  \begin{center}
+    \begin{tikzpicture}[
+        every node/.style={font=\scriptsize\bfseries},
+        box/.style={
+          draw=stplred, line width=1pt,
+          fill=stplcard, text=stplwhite,
+          rounded corners=2pt,
+          minimum width=1.7cm, minimum height=0.6cm,
+          align=center,
+        },
+        dbbox/.style={
+          draw=stplred, line width=1pt,
+          fill=stplred, text=stplwhite,
+          rounded corners=2pt,
+          minimum width=1.7cm, minimum height=0.6cm,
+          align=center,
+        },
+        arr/.style={-latex, draw=stplred, line width=1pt},
+        lbl/.style={font=\tiny\itshape, text=stplmuted},
+      ]
+      % Stage 1: Klient + Serwer + HTTPS arrow
+      \node[box] (cli) {Klient};
+      \node[box, right=1.4cm of cli] (srv) {Serwer firmy};
+      \node[dbbox, right=1.4cm of srv, visible on=<2->] (db) {Prywatna DB};
+      \draw[arr] (cli) -- node[lbl, above]{HTTPS} (srv);
+
+      % Stage 2: Prywatna DB + zaufanie arrow
+      \begin{scope}[visible on=<2->]
+        \draw[arr] (srv) -- node[lbl, above]{zaufanie} (db);
+      \end{scope}
+    \end{tikzpicture}
+  \end{center}
   \begin{alertblock}{Jeden właściciel prawdy}
     Firma decyduje, co jest w bazie. Trzeba jej zaufać, że nie kłamie.
   \end{alertblock}
@@ -49,7 +81,50 @@
     \item Logika żyje on-chain jako \textbf{program}
     \item Dane w koncie blockchain --- \textbf{bezaufaniowe wykonanie}
   \end{itemize}
-  \vspace{0.3cm}
+  \vspace{0.2cm}
+  \begin{center}
+    \begin{tikzpicture}[
+        every node/.style={font=\scriptsize\bfseries},
+        box/.style={
+          draw=stplred, line width=1pt,
+          fill=stplcard, text=stplwhite,
+          rounded corners=2pt,
+          minimum width=1.7cm, minimum height=0.6cm,
+          align=center,
+        },
+        accbox/.style={
+          draw=stplred, line width=1pt,
+          fill=stplred, text=stplwhite,
+          rounded corners=2pt,
+          minimum width=1.7cm, minimum height=0.6cm,
+          align=center,
+        },
+        arr/.style={-latex, draw=stplred, line width=1pt},
+        lbl/.style={font=\tiny\itshape, text=stplmuted},
+      ]
+      % Stage 1: Klient
+      \node[box] (cli) {Klient};
+      \node[draw=stplred, line width=1pt, fill=stplcard,
+            rounded corners=2pt,
+            minimum width=2.0cm, minimum height=1.0cm,
+            right=1.4cm of cli, visible on=<2->] (cluster) {};
+      \node[accbox, right=1.4cm of cluster, visible on=<3->] (acc) {Konta};
+
+      % Stage 2: Klaster (3-dot cluster) + podpis arrow
+      \begin{scope}[visible on=<2->]
+        \node[lbl] at ($(cluster.north)+(0,-0.2cm)$) {Klaster};
+        \node[circle, fill=stplred, inner sep=1.5pt] at ($(cluster.center)+(-0.45,-0.08)$) {};
+        \node[circle, fill=stplred, inner sep=1.5pt] at ($(cluster.center)+(0,-0.08)$) {};
+        \node[circle, fill=stplred, inner sep=1.5pt] at ($(cluster.center)+(0.45,-0.08)$) {};
+        \draw[arr] (cli) -- node[lbl, above]{podpis} (cluster);
+      \end{scope}
+
+      % Stage 3: Konta + stan arrow
+      \begin{scope}[visible on=<3->]
+        \draw[arr] (cluster) -- node[lbl, above]{stan} (acc);
+      \end{scope}
+    \end{tikzpicture}
+  \end{center}
   \begin{exampleblock}{Backend staje się programem}
     Nie ma serwera firmy --- jest klaster węzłów, który każdy może odpytać.
   \end{exampleblock}
@@ -57,12 +132,57 @@
 
 % TODO: 4. RPC node --- term debut (block; analogia: bankomat dowolnej sieci)
 \begin{frame}{RPC node}
-  \begin{itemize}
-    \item Frontend potrzebuje okna na łańcuch --- skądś czytać stan i wysyłać transakcje
-    \item Setki publicznych węzłów udostępniają to samo API HTTP/JSON
-    \item Analogia --- \textbf{bankomat dowolnej sieci}, nie obchodzi cię który, saldo to samo
-    \item Nazwa techniczna --- \textbf{Remote Procedure Call (RPC)}
-  \end{itemize}
+  \begin{columns}[T]
+    \column{0.50\textwidth}
+      \begin{itemize}
+        \item Frontend potrzebuje \textbf{okna na łańcuch}
+        \item Setki publicznych węzłów, to samo API
+        \item Analogia --- \textbf{bankomat dowolnej sieci}
+        \item \textbf{Remote Procedure Call (RPC)}
+      \end{itemize}
+    \column{0.48\textwidth}
+      \begin{center}
+        \begin{tikzpicture}[
+            every node/.style={font=\scriptsize\bfseries},
+            box/.style={
+              draw=stplred, line width=0.8pt,
+              fill=stplcard, text=stplwhite,
+              rounded corners=2pt,
+              minimum width=1.3cm, minimum height=0.5cm,
+              align=center,
+            },
+            clbox/.style={
+              draw=stplred, line width=0.8pt,
+              fill=stplred, text=stplwhite,
+              rounded corners=2pt,
+              minimum width=1.3cm, minimum height=0.5cm,
+              align=center,
+            },
+            arr/.style={-latex, draw=stplred, line width=0.7pt},
+          ]
+          % Stage 1: Frontend
+          \node[box] (fe) at (0,0) {Frontend};
+          \node[box, visible on=<2->] (r1) at (1.8, 0.8) {Helius};
+          \node[box, visible on=<2->] (r2) at (1.8, 0) {QuickNode};
+          \node[box, visible on=<2->] (r3) at (1.8,-0.8) {własny};
+          \node[clbox, visible on=<3->] (cl) at (3.6, 0) {Klaster};
+
+          % Stage 2: RPC fan from Frontend
+          \begin{scope}[visible on=<2->]
+            \draw[arr] (fe) -- (r1);
+            \draw[arr] (fe) -- (r2);
+            \draw[arr] (fe) -- (r3);
+          \end{scope}
+
+          % Stage 3: arrows into Klaster
+          \begin{scope}[visible on=<3->]
+            \draw[arr] (r1) -- (cl);
+            \draw[arr] (r2) -- (cl);
+            \draw[arr] (r3) -- (cl);
+          \end{scope}
+        \end{tikzpicture}
+      \end{center}
+  \end{columns}
   \vspace{0.3cm}
   \begin{block}{Definicja}
     \textbf{RPC node} --- węzeł sieci, który przyjmuje zapytania klienta
@@ -74,25 +194,83 @@
 \section{Co się zmienia}
 
 % TODO: 5. Read vs Write --- A-vs-B opposition (no helper block)
+%       Sequential reveal: Read (overlays 1-4), then Write (overlays 5-8).
 \begin{frame}{Read vs Write}
   \begin{columns}
     \column{0.48\textwidth}
       \begin{block}{Read}
+        \centering
+        \begin{tikzpicture}[
+            every node/.style={font=\tiny\bfseries},
+            b/.style={
+              draw=stplred, line width=0.7pt,
+              fill=stplcard, text=stplwhite,
+              rounded corners=2pt,
+              minimum width=0.9cm, minimum height=0.4cm, align=center,
+            },
+            arr/.style={-latex, draw=stplred, line width=0.7pt},
+          ]
+          % Stage 1 (<1->): request out
+          \node[b] (c) {Klient};
+          \node[b, right=0.6cm of c] (r) {RPC};
+          \draw[arr] ([yshift=2.5pt]c.east) -- ([yshift=2.5pt]r.west);
+          % Stage 2 (<3->): response back, paired with "Odpowiedź natychmiast"
+          \begin{scope}[visible on=<3->]
+            \draw[arr] ([yshift=-2.5pt]r.west) -- ([yshift=-2.5pt]c.east);
+          \end{scope}
+        \end{tikzpicture}
+        \vspace{0.1cm}
         \begin{itemize}
-          \item Gratis, bez podpisu
-          \item Dowolny węzeł RPC
-          \item Odpowiedź natychmiast
-          \item Np. podgląd salda konta
+          \item<1-> Gratis, bez podpisu
+          \item<2-> Dowolny węzeł RPC
+          \item<3-> Odpowiedź natychmiast
+          \item<4-> Np. podgląd salda konta
         \end{itemize}
       \end{block}
 
     \column{0.48\textwidth}
       \begin{alertblock}{Write}
+        \centering
+        \begin{tikzpicture}[
+            every node/.style={font=\tiny\bfseries},
+            b/.style={
+              draw=stplred, line width=0.7pt,
+              fill=stplcard, text=stplwhite,
+              rounded corners=2pt,
+              minimum width=0.7cm, minimum height=0.4cm, align=center,
+            },
+            bk/.style={
+              draw=stplred, line width=0.7pt,
+              fill=stplred, text=stplwhite,
+              rounded corners=2pt,
+              minimum width=0.5cm, minimum height=0.4cm, align=center,
+            },
+            arr/.style={-latex, draw=stplred, line width=0.7pt},
+          ]
+          % Layout reserved from <1->; nodes hidden until Write stages.
+          \node[b, visible on=<5->] (c) {Klient};
+          \node[b, right=0.2cm of c, visible on=<5->] (r) {RPC};
+          \node[b, right=0.2cm of r, visible on=<6->] (k) {Klaster};
+          \node[bk, right=0.2cm of k, visible on=<7->] (ok) {ack};
+          % Stage 5: Klient → RPC
+          \begin{scope}[visible on=<5->]
+            \draw[arr] (c) -- (r);
+          \end{scope}
+          % Stage 6: → Klaster
+          \begin{scope}[visible on=<6->]
+            \draw[arr] (r) -- (k);
+          \end{scope}
+          % Stage 7: → ack
+          \begin{scope}[visible on=<7->]
+            \draw[arr] (k) -- (ok);
+          \end{scope}
+        \end{tikzpicture}
+        \vspace{0.1cm}
         \begin{itemize}
-          \item \textbf{Transakcja} podpisana kluczem
-          \item Opłata sieciowa za włączenie
-          \item Czeka na potwierdzenie klastra
-          \item Np. wysłanie tokena
+          \item<5-> \textbf{Transakcja} podpisana kluczem
+          \item<6-> Opłata sieciowa za włączenie
+          \item<7-> Czeka na potwierdzenie klastra
+          \item<8-> Np. wysłanie tokena
         \end{itemize}
       \end{alertblock}
   \end{columns}
@@ -100,13 +278,53 @@
 
 % TODO: 6. Bezserwerowa architektura --- benefit + ryzyko (alertblock: kod publiczny i niezmienny)
 \begin{frame}{Bezserwerowa architektura}
-  \begin{itemize}
-    \item Kod nie żyje na \textbf{twoim} serwerze --- wykonuje go cała sieć
-    \item Brak uptime'u, deploymentu, utrzymania VPS
-    \item Brak bazy danych pod kontrolą --- stan jest publiczny on-chain
-    \item Dev pisze logikę, nie infrastrukturę
-  \end{itemize}
-  \vspace{0.3cm}
+  \begin{columns}[T]
+    \column{0.56\textwidth}
+      \begin{itemize}
+        \item Kod nie żyje na \textbf{twoim} serwerze
+        \item Brak uptime'u, deploymentu, VPS
+        \item Stan \textbf{publiczny on-chain}
+        \item Dev pisze logikę, nie infrastrukturę
+      \end{itemize}
+    \column{0.42\textwidth}
+      \begin{center}
+        \begin{tikzpicture}[
+            every node/.style={font=\tiny\bfseries, align=center},
+            vbox/.style={
+              draw=stplmuted, line width=0.6pt,
+              fill=stplcard, text=stplwhite,
+              rounded corners=2pt,
+              minimum width=1.3cm, minimum height=0.9cm,
+            },
+            lnk/.style={draw=stplmuted, line width=0.5pt},
+            lbl/.style={font=\tiny\itshape, text=stplmuted},
+          ]
+          % Stage 1: one validator, with the program inside
+          \node[vbox] (v1) at (0,0.55)    {Walidator\\\textcolor{stplred}{Program}};
+          % Stage 2: same program replicated on every node + interconnections
+          \begin{scope}[visible on=<2->]
+            \node[vbox] (v2) at (1.6,0.55)  {Walidator\\\textcolor{stplred}{Program}};
+            \node[vbox] (v3) at (3.2,0.55)  {Walidator\\\textcolor{stplred}{Program}};
+            \node[vbox] (v4) at (0,-0.65)   {Walidator\\\textcolor{stplred}{Program}};
+            \node[vbox] (v5) at (1.6,-0.65) {Walidator\\\textcolor{stplred}{Program}};
+            \node[vbox] (v6) at (3.2,-0.65) {Walidator\\\textcolor{stplred}{Program}};
+            % Adjacency: top + bottom rows, three verticals
+            \draw[lnk] (v1) -- (v2);
+            \draw[lnk] (v2) -- (v3);
+            \draw[lnk] (v4) -- (v5);
+            \draw[lnk] (v5) -- (v6);
+            \draw[lnk] (v1) -- (v4);
+            \draw[lnk] (v2) -- (v5);
+            \draw[lnk] (v3) -- (v6);
+            % Diagonals to v5 (routes through empty space between boxes)
+            \draw[lnk] (v1) -- (v5);
+            \draw[lnk] (v3) -- (v5);
+            \node[lbl] at (1.6,-1.35) {ten sam kod na każdym węźle};
+          \end{scope}
+        \end{tikzpicture}
+      \end{center}
+  \end{columns}
+  \vspace{0.1cm}
   \begin{alertblock}{Druga strona medalu}
     Kod publiczny i niezmienny --- błąd też publiczny i trudny do cofnięcia.
   \end{alertblock}
@@ -116,12 +334,50 @@
 %       Asymmetric crypto deep-dive lives in L6; here keep it intuitive.
 \begin{frame}{Portfel jako tożsamość}
   \begin{itemize}
-    \item Brak rejestracji i hasła --- jest \textbf{para kluczy}
-    \item \textbf{Klucz publiczny} działa jak adres konta w sieci
-    \item \textbf{Klucz prywatny} podpisuje każdą transakcję
-    \item Portfel przechowuje klucze i podpisuje w imieniu użytkownika
+    \item Brak hasła --- jest \textbf{para kluczy}
+    \item \textbf{Klucz prywatny} podpisuje transakcję
+    \item \textbf{Klucz publiczny} weryfikuje podpis i jest adresem
+    \item Portfel trzyma klucze i podpisuje w imieniu użytkownika
   \end{itemize}
-  \vspace{0.3cm}
+  \vspace{0.25cm}
+  \begin{center}
+    \begin{tikzpicture}[
+        every node/.style={font=\scriptsize\bfseries, align=center},
+        box/.style={
+          draw=stplred, line width=1pt,
+          fill=stplcard, text=stplwhite,
+          rounded corners=2pt,
+          minimum width=2.0cm, minimum height=0.7cm,
+        },
+        outbox/.style={
+          draw=stplred, line width=1pt,
+          fill=stplred, text=stplwhite,
+          rounded corners=2pt,
+          minimum width=2.0cm, minimum height=0.7cm,
+        },
+        arr/.style={-latex, draw=stplred, line width=1pt},
+        lbl/.style={font=\tiny\itshape, text=stplmuted},
+      ]
+      % Stage 1: niepodpisana Transakcja --- input
+      \node[box] (tx) at (0, 0) {Transakcja};
+      % Stage 2: Klucz prywatny podpisuje --- produkuje Podpisaną transakcję
+      \node[box, visible on=<2->] (priv) at (3.7, 1.3) {Klucz\\prywatny};
+      \node[outbox, visible on=<2->] (sig) at (3.7, 0) {Podpisana\\transakcja};
+      % Stage 3: Klucz publiczny weryfikuje --- produkuje wynik
+      \node[box, visible on=<3->] (pub) at (7.4, 1.3) {Klucz\\publiczny};
+      \node[outbox, visible on=<3->] (ver) at (7.4, 0) {Weryfikacja\,$\checkmark$};
+
+      \begin{scope}[visible on=<2->]
+        \draw[arr] (tx)   -- (sig);
+        \draw[arr] (priv) -- node[lbl, right]{podpisuje} (sig);
+      \end{scope}
+      \begin{scope}[visible on=<3->]
+        \draw[arr] (sig)  -- (ver);
+        \draw[arr] (pub)  -- node[lbl, right]{weryfikuje} (ver);
+      \end{scope}
+    \end{tikzpicture}
+  \end{center}
+  \vspace{0.1cm}
   \begin{exampleblock}{Analogia}
     Podpis odręczny nie do podrobienia --- ale i bez opcji resetu.
   \end{exampleblock}
@@ -252,12 +508,53 @@
 % TODO: 10. Podsumowanie --- recap czterech różnic (Web3 vs Web2)
 \begin{frame}{Podsumowanie}
   \begin{itemize}
-    \item Brak serwera tożsamości --- \textbf{portfel} jest loginem
-    \item \textbf{RPC} zamiast prywatnego API --- wymienne, publiczne
-    \item Stan \textbf{publiczny on-chain} zamiast prywatnej bazy
-    \item Read gratis, write z podpisem i opłatą
+    \item<1-> \textbf{Portfel} zamiast serwera tożsamości
+    \item<2-> \textbf{RPC} zamiast prywatnego API
+    \item<3-> Stan \textbf{publiczny on-chain}, nie w bazie
+    \item<4-> Read gratis, write z podpisem i opłatą
   \end{itemize}
-  \vspace{0.4cm}
+  \vspace{0.2cm}
+  \begin{center}
+    \begin{tikzpicture}[
+        every node/.style={font=\scriptsize\bfseries},
+        b/.style={
+          draw=stplred, line width=0.8pt,
+          fill=stplcard, text=stplwhite,
+          rounded corners=2pt,
+          minimum width=1.8cm, minimum height=0.5cm, align=center,
+        },
+        r/.style={
+          draw=stplred, line width=0.8pt,
+          fill=stplred, text=stplwhite,
+          rounded corners=2pt,
+          minimum width=1.8cm, minimum height=0.5cm, align=center,
+        },
+        arr/.style={-latex, draw=stplred, line width=0.7pt},
+        lbl/.style={font=\tiny\itshape, text=stplmuted},
+      ]
+      % Headers (always)
+      \node[lbl] at (0, 1.95)   {Web2};
+      \node[lbl] at (3.0, 1.95) {Web3};
+      % Stage 1: login row
+      \node[b] (w2c) at (0, 1.4)   {Klient};
+      \node[b] (w3c) at (3.0, 1.4) {Portfel};
+      % Stage 2: API row
+      \node[b, visible on=<2->] (w2s) at (0, 0.7)   {Serwer};
+      \node[b, visible on=<2->] (w3r) at (3.0, 0.7) {RPC};
+      \begin{scope}[visible on=<2->]
+        \draw[arr] (w2c) -- (w2s);
+        \draw[arr] (w3c) -- (w3r);
+      \end{scope}
+      % Stage 3: state row
+      \node[r, visible on=<3->] (w2d) at (0, 0)   {Prywatna DB};
+      \node[r, visible on=<3->] (w3a) at (3.0, 0) {On-chain};
+      \begin{scope}[visible on=<3->]
+        \draw[arr] (w2s) -- (w2d);
+        \draw[arr] (w3r) -- (w3a);
+      \end{scope}
+    \end{tikzpicture}
+  \end{center}
+  \vspace{0.2cm}
   \begin{center}
     \uncover<5->{\textcolor{stplmuted}{Wiesz \textbf{JAK} pracuje Web3 dev.
     Od kolejnej lekcji --- co się na tym modelu buduje: DeFi.}}

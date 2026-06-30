@@ -233,6 +233,50 @@ Why `opacity=0` instead of `\only`:
 - `\only` removes the element entirely → bounding box shrinks → diagram shifts between overlays.
 - `opacity=0` keeps the geometry; the element is invisible but still occupies space.
 
+### Hybrid pattern — node style + scope
+
+For a stage that adds **one node + one arrow with a midway label**, putting
+`visible on=<N->` directly on the node is cleaner than wrapping a single node
+in a scope. Keep the scope for the arrow because labels on paths need the
+scope's text-opacity propagation:
+
+```latex
+% Stage 1: always visible
+\node[box] (cli) {Klient};
+\node[box, right=1.4cm of cli] (srv) {Serwer firmy};
+% declared at stage 1 to lock the bounding box, but invisible until <2->
+\node[dbbox, right=1.4cm of srv, visible on=<2->] (db) {Prywatna DB};
+\draw[arr] (cli) -- node[lbl, above]{HTTPS} (srv);
+
+% Stage 2: arrow with label needs the scope
+\begin{scope}[visible on=<2->]
+  \draw[arr] (srv) -- node[lbl, above]{zaufanie} (db);
+\end{scope}
+```
+
+The early declaration of `db` (with `visible on`) reserves its geometry from
+overlay 1, so the diagram doesn't reflow when stage 2 arrives. Worked example:
+`1_paradigm.tex` slide "Web2 w jednym zdaniu".
+
+### Sync stages to bullet reveals
+
+With `\beamerdefaultoverlayspecification{<+->}` set in `preamble.tex`, each
+`\item` consumes the next overlay automatically. Use **the same overlay numbers**
+on your TikZ stages so graph elements appear in lockstep with the bullet that
+introduces them — graph stages do **not** consume their own counter, they
+overlay existing bullet overlays.
+
+```
+overlay 1 → bullet 1 + graph stage 1
+overlay 2 → bullet 2 + graph stage 2 (visible on=<2->)
+overlay 3 → bullet 3 + graph stage 3 (visible on=<3->)
+overlay 4 → helper block
+```
+
+Pick stage numbers from the narrative role of each graph element, not the count.
+Two-stage reveals are common: the "before" state on <1->, the "after" state on
+<2-> (e.g. `1_paradigm.tex` summary slide pairs Web2 stack with Web3 stack).
+
 ### Beamer catcode caveat
 
 `alt/.code args={<#1>#2#3}` uses `<>` characters. Inside a Beamer `\begin{frame}`, Beamer changes the catcode of `<` and `>` for overlay parsing. Defining this tikzset inside a frame causes:

@@ -201,14 +201,56 @@ let ids = vec![pk_a, pk_b];      // makro tworzace Vec
     \item Rust nie kopiuje danych domyślnie --- przekazuje \textbf{pożyczkę} referencji (\texttt{\&})
     \item Jak biblioteka: \texttt{\&} = czytam książkę, \texttt{\&mut} = piszę notatki; właściciel się nie zmienia
     \item Kompilator gwarantuje: jeden \texttt{\&mut} \textbf{lub} wiele \texttt{\&} --- nigdy oba naraz
-    \item \textcolor{stplmuted}{Tu --- intuicja, nie teoria; pełny borrow checker na kursie RUST}
   \end{itemize}
-  \begin{block}{Dwa rodzaje pożyczki}
+  \vspace{-0.25cm}
+  \begin{center}
+    \begin{tikzpicture}[
+        every node/.style={font=\scriptsize\bfseries},
+        box/.style={
+          draw=stplred, line width=1pt,
+          fill=stplcard, text=stplwhite,
+          rounded corners=2pt,
+          minimum width=1.0cm, minimum height=0.4cm,
+          align=center,
+        },
+        vbox/.style={
+          draw=stplred, line width=1pt,
+          fill=stplcard, text=stplwhite,
+          rounded corners=2pt,
+          minimum width=1.2cm, minimum height=0.85cm,
+          align=center,
+        },
+        arr/.style={-latex, draw=stplred, line width=1pt},
+        lbl/.style={font=\tiny\itshape, text=stplmuted},
+      ]
+      % Geometry anchors: both vaults visible from <1->
+      \node[vbox] (vaultR) at (2.6, 0) {Vault};
+      \node[vbox] (vaultW) at (7.6, 0) {Vault};
+
+      % Stage 2: three readers share &
+      \begin{scope}[visible on=<2->]
+        \node[box] (r1) at (0, 0.45) {fn};
+        \node[box] (r2) at (0, 0)    {fn};
+        \node[box] (r3) at (0,-0.45) {fn};
+        \draw[arr] (r1.east) -- node[lbl, above]{\&} (vaultR.west |- r1);
+        \draw[arr] (r2.east) -- node[lbl, above]{\&} (vaultR.west |- r2);
+        \draw[arr] (r3.east) -- node[lbl, above]{\&} (vaultR.west |- r3);
+        \node[lbl] at (1.3,-0.85) {wielu czytelnikow --- OK};
+      \end{scope}
+
+      % Stage 3: one writer holds &mut exclusively
+      \begin{scope}[visible on=<3->]
+        \node[box] (w) at (5.0, 0) {fn};
+        \draw[arr] (w.east) -- node[lbl, above]{\&mut} (vaultW.west);
+        \node[lbl] at (6.3,-0.85) {jeden piszacy --- wylaczny};
+      \end{scope}
+    \end{tikzpicture}
+  \end{center}
+  \vspace{-0.15cm}
+  \begin{block}{Sygnatury}
 \begin{lstlisting}
 fn read_vault(v: &Vault)            { msg!("{}", v.balance); }
 fn add_funds(v: &mut Vault, n: u64) { v.balance += n; }
-
-let vault = &mut ctx.accounts.vault;  // typowy wzorzec Anchor
 \end{lstlisting}
   \end{block}
 \end{frame}

@@ -76,17 +76,34 @@ struct Account {
 \end{frame}
 
 \begin{frame}{Vs Ethereum}
-  \begin{columns}
-    \column{0.48\textwidth}
-      \begin{alertblock}{Ethereum}
-        Kontrakt trzyma stan \textbf{w sobie} --- kod i dane razem.
-      \end{alertblock}
-    \column{0.48\textwidth}
-      \begin{block}{Solana}
-        Program \textbf{bezstanowy} --- stan żyje w osobnych kontach.
-      \end{block}
-  \end{columns}
-  \vspace{0.3cm}
+  \begin{center}
+    \begin{tikzpicture}[
+        bx/.style={draw=stplred, line width=1pt, fill=stplcard, rounded corners=2pt,
+                   text=stplwhite, font=\scriptsize\bfseries, align=center},
+        arr/.style={-latex, draw=stplred, line width=1pt},
+        lbl/.style={font=\tiny\itshape, text=stplmuted}
+      ]
+      % Ethereum: one box with code + state inside
+      \node[bx, minimum width=2.4cm, minimum height=2.2cm] (eth) at (-3.6, 0) {};
+      \node[font=\small\bfseries, text=stplwhite] at ($(eth.north)+(0,-0.32)$) {Kontrakt};
+      \node[font=\scriptsize, text=stplred] at ($(eth.center)+(0,0.0)$)  {kod};
+      \node[font=\scriptsize, text=stplred] at ($(eth.center)+(0,-0.45)$) {+ stan};
+      \node[lbl] at ($(eth.south)+(0,-0.3)$) {Ethereum};
+
+      % Solana: program fanning out to data accounts
+      \begin{scope}[visible on=<2->]
+        \node[bx, minimum width=1.6cm, minimum height=0.65cm] (prog) at (1.4, 0) {Program};
+        \node[bx, minimum width=1.4cm, minimum height=0.5cm]  (a1) at (4.3,  1.0) {konto};
+        \node[bx, minimum width=1.4cm, minimum height=0.5cm]  (a2) at (4.3,  0.0) {konto};
+        \node[bx, minimum width=1.4cm, minimum height=0.5cm]  (a3) at (4.3, -1.0) {konto};
+        \draw[arr] (prog.east) -- (a1.west);
+        \draw[arr] (prog.east) -- (a2.west);
+        \draw[arr] (prog.east) -- (a3.west);
+        \node[lbl] at (2.85, -1.7) {Solana};
+      \end{scope}
+    \end{tikzpicture}
+  \end{center}
+  \vspace{0.2cm}
   \begin{exampleblock}{Analogia}
     Program to funkcja; konta danych to argumenty i pamięć podane z zewnątrz.
   \end{exampleblock}
@@ -109,16 +126,27 @@ struct Account {
 \end{frame}
 
 \begin{frame}{Owner, Signer}
-  \begin{columns}
-    \column{0.48\textwidth}
-      \begin{block}{Owner}
-        Program z prawem zapisu do bajtów konta.
-      \end{block}
-    \column{0.48\textwidth}
-      \begin{block}{Signer}
-        User, który podpisem autoryzuje instrukcję.
-      \end{block}
-  \end{columns}
+  \begin{center}
+    \begin{tikzpicture}[
+        bx/.style={draw=stplred, line width=1pt, fill=stplcard, rounded corners=2pt,
+                   text=stplwhite, font=\scriptsize\bfseries, align=center,
+                   minimum width=2.0cm, minimum height=0.65cm},
+        arr/.style={-latex, draw=stplred, line width=1pt},
+        lbl/.style={font=\tiny\itshape, text=stplmuted}
+      ]
+      \node[bx]                       (user) at (-4.2, 0) {User};
+      \node[bx, minimum width=2.4cm]  (prog) at ( 0.0, 0) {Token Program};
+      \node[bx, minimum width=1.7cm]  (acc)  at ( 4.2, 0) {Konto};
+
+      \draw[arr] (user.east) -- (prog.west)
+            node[midway, above, lbl] {podpis};
+      \draw[arr] (prog.east) -- (acc.west)
+            node[midway, above, lbl] {zapis};
+
+      \node[lbl, text=stplred] at ($(user.south)+(0,-0.25)$) {Signer};
+      \node[lbl, text=stplred] at ($(prog.south)+(0,-0.25)$) {Owner};
+    \end{tikzpicture}
+  \end{center}
   \vspace{0.3cm}
   \begin{exampleblock}{Przelew tokena}
     Właścicielem konta jest Token Program --- ale to \textbf{Ty} podpisujesz zgodę.
@@ -128,10 +156,39 @@ struct Account {
 \begin{frame}{Adres}
   \begin{itemize}
     \item Część adresów = klucz publiczny (portfele, nowe konta)
-    \item Część wyliczana deterministycznie z nasion --- to \textbf{PDA}
+    \item Część wyliczana deterministycznie przez program --- to \textbf{PDA}
     \item PDA = Program Derived Address (szczegóły później)
   \end{itemize}
-  \vspace{0.25cm}
+  \vspace{0.2cm}
+  \begin{center}
+    \begin{tikzpicture}[
+        bx/.style={draw=stplred, line width=1pt, fill=stplcard, rounded corners=2pt,
+                   text=stplwhite, font=\scriptsize\bfseries, align=center,
+                   minimum width=2.0cm, minimum height=0.55cm},
+        arr/.style={-latex, draw=stplred, line width=1pt},
+        lbl/.style={font=\tiny\itshape, text=stplmuted}
+      ]
+      \node[bx, minimum width=1.7cm] (addr) at (3.2, 0) {adres konta};
+
+      % top: keypair path
+      \node[bx] (kp) at (-3.8, 0.8) {keypair};
+      \node[bx] (pk) at (-0.6, 0.8) {pubkey};
+      \draw[arr] (kp) -- (pk);
+      \draw[arr] (pk.east) -- (addr.north west);
+
+      % bottom: PDA path
+      \begin{scope}[visible on=<2->]
+        \node[bx] (prg) at (-3.8, -0.8) {dane indeksu};
+        \node[bx] (wy)  at (-0.6, -0.8) {wyliczenie};
+        \draw[arr] (prg) -- (wy);
+        \draw[arr] (wy.east) -- (addr.south west);
+      \end{scope}
+
+      \begin{scope}[visible on=<3->]
+        \node[lbl, text=stplred] at ($(wy.east)!0.5!(addr.south west)+(0,-0.28)$) {PDA};
+      \end{scope}
+    \end{tikzpicture}
+  \end{center}
   \begin{alertblock}{Sesja live}
     PDA rozkładamy na czynniki pierwsze na sesji live --- najtrudniejszy temat kursu.
   \end{alertblock}
@@ -160,9 +217,22 @@ struct Account {
   \end{itemize}
 \begin{lstlisting}
 #[account(init, payer = signer, space = 8 + 32 + 8)]
-//                                      ^    ^    ^
-//                          dyskryminator owner licznik
 \end{lstlisting}
+  \begin{center}
+    \begin{tikzpicture}[x=0.2cm, y=1cm]
+      \fill[stplred!55!black, draw=stplwhite, line width=0.6pt] (0,0)  rectangle  (8,0.7);
+      \fill[stplred,          draw=stplwhite, line width=0.6pt] (8,0)  rectangle (40,0.7);
+      \fill[stplred!55!black, draw=stplwhite, line width=0.6pt] (40,0) rectangle (48,0.7);
+
+      \node[font=\tiny\bfseries, text=stplwhite, above] at (4,0.7)  {8 B};
+      \node[font=\tiny\bfseries, text=stplwhite, above] at (24,0.7) {32 B};
+      \node[font=\tiny\bfseries, text=stplwhite, above] at (44,0.7) {8 B};
+
+      \node[font=\tiny\itshape, text=stplmuted, below] at (4,0)  {dyskryminator};
+      \node[font=\tiny\itshape, text=stplmuted, below] at (24,0) {owner};
+      \node[font=\tiny\itshape, text=stplmuted, below] at (44,0) {licznik};
+    \end{tikzpicture}
+  \end{center}
   \begin{itemize}
     \item W Anchorze liczymy to świadomie atrybutem \texttt{space}
     \item Projektowanie danych = projektowanie kont

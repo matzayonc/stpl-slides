@@ -6,13 +6,24 @@ LaTeX beamer presentation setup.
 
 - `texlive-meta` (or any TeX Live distribution with `beamer` and `texlive-fontsextra`)
 - `latexmk`
+- `poppler` — provides `pdftoppm`, used by the overlay deduplicator
+- `qpdf` — used by the overlay deduplicator to rewrite PDFs
+- `python3` — runs `scripts/dedupe_overlays.py` as part of every build
 - `libreoffice` (optional, for PPTX export)
 
 On Manjaro/Arch:
 
 ```bash
-sudo pacman -S texlive-meta latexmk libreoffice-fresh
+sudo pacman -S texlive-meta latexmk poppler qpdf python libreoffice-fresh
 ```
+
+## Overlay deduplication
+
+Beamer's `<+->` auto-overlay can produce visually identical adjacent pages —
+dead clicks where an empty container opens but nothing changes on screen.
+`scripts/dedupe_overlays.py` runs automatically after every PDF build: it
+renders each page at low resolution, hashes it, and drops consecutive
+duplicates in place using `qpdf`. No manual step required.
 
 ## Usage
 

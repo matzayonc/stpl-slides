@@ -4,22 +4,27 @@ This repository builds LaTeX/Beamer slide decks for the Superteam Poland Solana
 Bootcamp. Read the files below before editing slides — they are the source of
 truth, this file only points to them.
 
-## Read first
+## Required reading — by task
 
-- [`style.md`](style.md) — **content & narrative rules**: audience model,
-  problem → mechanism → benefit arc, slide skeleton (title 2–4 words, 3–5
-  bullets, mandatory helper block), term-introduction pattern, analogies,
-  anglicisms, math/code conventions, voice. Open this before writing any
-  new slide.
-- [`branding.md`](branding.md) — **visual chrome**: colors, block types,
-  bullets, footline, section dividers, title slide. Open this when changing
-  anything visual.
-- [`README.md`](README.md) — **build & file conventions**: `make` targets,
-  filename pattern `<index>_<slug>.tex`, mandatory closing `gn` slide.
-- [`preamble.tex`](preamble.tex) — the actual implementation of brand
-  chrome (colors, beamer templates, `\maketitleframe`, section dividers,
-  block environments). Edit only when the brand definition itself needs to
-  change; otherwise treat as fixed and author against it.
+Before starting any task, read every file listed for that task type. Do not
+skip this step.
+
+**Writing or editing slide content** (new slides, bullet text, narrative):
+- Read [`style.md`](style.md) — content rules, narrative arc, slide skeleton,
+  anglicisms, math/code conventions, voice
+
+**Changing or authoring visual structure** (blocks, colors, layout, bullets):
+- Read [`branding.md`](branding.md) — colors, block types, bullets, footline,
+  section dividers, title slide
+- Read [`preamble.tex`](preamble.tex) — actual implementation; edit only if
+  the brand definition itself needs to change
+
+**Adding or editing diagrams / graphs**:
+- Read [`graphs.md`](graphs.md) — TikZ libraries, node styles, edge patterns,
+  Beamer-specific caveats
+
+**Build, filenames, or repo structure questions**:
+- Read [`README.md`](README.md) — `make` targets, filename pattern, `gn` slide
 
 ## Existing slides
 
