@@ -277,6 +277,11 @@ Pick stage numbers from the narrative role of each graph element, not the count.
 Two-stage reveals are common: the "before" state on <1->, the "after" state on
 <2-> (e.g. `1_paradigm.tex` summary slide pairs Web2 stack with Web3 stack).
 
+The same lockstep idea applies to **code listings** synced to bullets, but the
+mechanism differs (listings can't take a TikZ `visible on`): use the `codeblock`
+card + `[style=reveal]` + `(*@\onslide<k->@*)` line tags. See `style.md` §8.2 and
+`branding.md` → Code reveal card.
+
 ### Beamer catcode caveat
 
 `alt/.code args={<#1>#2#3}` uses `<>` characters. Inside a Beamer `\begin{frame}`, Beamer changes the catcode of `<` and `>` for overlay parsing. Defining this tikzset inside a frame causes:

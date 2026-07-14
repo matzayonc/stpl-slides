@@ -61,6 +61,28 @@ Implemented via `tcolorbox` (flat, no rounded corners):
 
 All block titles: bold white. No box rule, no shadow.
 
+### Code reveal card (`codeblock`)
+
+For slides where code should reveal **in step with the bullets** (each fragment
+appearing on its bullet's overlay), use `codeblock` instead of `block`:
+
+```latex
+\begin{codeblock}{Title}
+\begin{lstlisting}[style=reveal]
+(*@\onslide<1->@*)first chunk        % shows with bullet 1
+(*@\onslide<2->@*)second chunk       % shows with bullet 2
+\end{lstlisting}
+\end{codeblock}
+```
+
+- `codeblock` is the `block` card **without** the auto-`\pause`, so it is
+  visible from overlay 1 and its lines can sync to the itemize bullets.
+- `[style=reveal]` drops the listing's own background/frame so the card shows
+  through solid — otherwise `\onslide` covers the per-line background too and it
+  goes ragged.
+- `\onslide<k->` (not `\pause`) keeps each line's vertical space, so the card
+  height stays constant and lines fade in place. Frame must be `[fragile]`.
+
 ## Bullet Points
 
 - Item marker: bold em-dash (`–`), color `stplred`

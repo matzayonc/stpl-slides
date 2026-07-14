@@ -215,11 +215,16 @@
       \node[font=\tiny\bfseries,  text=stplwhite] at (10.5,0.5) {zły dług};
     \end{tikzpicture}
   \end{center}
-  \vspace{0.15cm}
+  \vspace{0.1cm}
   \begin{itemize}
     \item \textbf{Loan-to-Value (LTV)} --- stosunek wartości pożyczki do wartości collateral
     \item \textbf{Health Factor (HF)} --- miara oddalenia pozycji od likwidacji; $HF < 1$ uruchamia likwidację
   \end{itemize}
+  \vspace{0.1cm}
+  \begin{block}{Health Factor}
+    \centering
+    $HF = (\text{collateral} \cdot \text{próg likwidacji}) \,/\, \text{dług}$
+  \end{block}
 \end{frame}
 
 \begin{frame}{Utilization Rate}

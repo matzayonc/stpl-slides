@@ -1,4 +1,4 @@
-# Egzamin --- Lekcja 2: Lending na Solanie
+# Egzamin --- Lekcja 3: Lending na Solanie
 
 ## Pytania
 
@@ -24,7 +24,7 @@
    której pozycja staje się otwarta na likwidację?
 
    A. $HF = \text{dług}/(\text{collateral} \cdot \text{threshold})$; likwidacja gdy $HF > 1$
-   B. $HF = (\text{collateral} \cdot \text{threshold})/\text{dług}$; likwidacja gdy $HF \leq 1$
+   B. $HF = (\text{collateral} \cdot \text{threshold})/\text{dług}$; likwidacja gdy $HF < 1$
    C. $HF = \text{collateral}/\text{dług}$; likwidacja gdy $HF < 2$
    D. $HF = \text{collateral} - \text{dług}$; likwidacja gdy $HF = 0$
 

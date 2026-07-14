@@ -8,6 +8,19 @@
 \author{}
 \institute{Superteam Poland}
 
+% Placeholder for a screenshot to be added later.
+% Usage: \screenshotph{opis}  or  \screenshotph[height]{opis}
+% Replace with \includegraphics[...]{images/...} once the image is ready.
+\newcommand{\screenshotph}[2][3.4cm]{%
+  \begin{tikzpicture}
+    \node[draw=stplmuted, dashed, line width=0.8pt,
+          rounded corners=4pt, fill=stplcard,
+          minimum width=\linewidth, minimum height=#1,
+          align=center, text=stplmuted, font=\scriptsize\itshape,
+          inner sep=4pt]
+      {[ zrzut ekranu ]\\#2};
+  \end{tikzpicture}}
+
 \begin{document}
 
 \maketitleframe
@@ -22,41 +35,85 @@
 % TODO: 1. Portfel --- twój login --- hook back to Lekcja 3 (no helper block)
 \begin{frame}{Portfel --- twój login}
   \begin{itemize}
-    \item Za chwilę powstaje \textbf{własna tożsamość} w sieci
+    \item Portfel to \textbf{tożsamość} użytkownika w sieci
     \item Ten sam portfel podpisze każdą transakcję do końca kursu
     \item Czemu nie ma hasła?
   \end{itemize}
 \end{frame}
 
-% TODO: 2. Para kluczy --- asymmetric crypto debut (exampleblock: skrytka bankowa)
+% TODO: 2. Para kluczy --- recap (introduced in Lekcja 1)
 \begin{frame}{Para kluczy}
   \begin{itemize}
-    \item Bez hasła i bez serwera --- co właściwie autoryzuje transakcję?
-    \item Sieć generuje \textbf{parę kluczy} --- dwie liczby związane matematycznie
-    \item Jeden klucz wolno pokazać światu, drugi nigdy nie opuszcza urządzenia
-    \item Pokazywany to \textbf{klucz publiczny} --- pełni rolę adresu konta
-    \item Sekretny to \textbf{klucz prywatny} --- zna go wyłącznie właściciel
+    \item \textbf{Klucz publiczny} pełni rolę adresu --- można go swobodnie udostępniać
+    \item \textbf{Klucz prywatny} autoryzuje transakcje --- nigdy nie opuszcza portfela
   \end{itemize}
-  \vspace{0.25cm}
-  \begin{exampleblock}{Analogia --- skrytka bankowa}
-    Każdy może wrzucić list przez szczelinę (klucz publiczny).
-    Otworzyć skrytkę od środka może tylko właściciel (klucz prywatny).
-  \end{exampleblock}
+  \vspace{0.6cm}
+  \begin{center}
+    \begin{tikzpicture}[
+        every node/.style={font=\scriptsize\bfseries},
+        box/.style={
+          draw=stplred, line width=1pt,
+          fill=stplcard, text=stplwhite,
+          rounded corners=2pt,
+          minimum width=2.3cm, minimum height=0.75cm,
+          align=center,
+        },
+        arr/.style={-latex, draw=stplred, line width=1pt},
+        lbl/.style={font=\tiny\itshape, text=stplmuted},
+      ]
+      % klucz prywatny w portfelu --- wspólny motyw w całej talii
+      \node[box] (priv) {Klucz\\prywatny};
+      \draw[draw=stplred, dashed, line width=0.8pt, rounded corners=4pt]
+        ($(priv.north west)+(-0.22,0.18)$) rectangle ($(priv.south east)+(0.22,-0.18)$);
+      \node[font=\tiny\bfseries, text=stplmuted]
+        at ($(priv.north)+(0,0.33)$) {Portfel};
+      \node[box, right=5.2cm of priv] (pub) {Klucz publiczny\\(adres)};
+      \coordinate (wr) at ($(priv.east)+(0.22,0)$);
+      \draw[arr] (wr) -- node[lbl, above]{wyprowadza (jednokierunkowo)} (pub.west);
+      \node[lbl, below=0.18cm] at ($(wr)!0.5!(pub.west)$)
+        {z publicznego nie policzysz prywatnego};
+    \end{tikzpicture}
+  \end{center}
 \end{frame}
 
-% TODO: 3. Podpis --- klucz prywatny szyfruje, publiczny weryfikuje (block)
+% TODO: 3. Podpis --- recap (introduced in Lekcja 1)
 \begin{frame}{Podpis}
   \begin{itemize}
-    \item \textbf{Klucz prywatny} liczy \textbf{podpis kryptograficzny} nad danymi transakcji
-    \item Każdy w sieci weryfikuje go \textbf{kluczem publicznym} nadawcy
-    \item Sam podpis nie zdradza klucza prywatnego --- nie da się go cofnąć
+    \item Klucz prywatny podpisuje transakcję --- każdy węzeł weryfikuje podpis kluczem publicznym
+    \item Zmiana jednego bajtu unieważnia podpis --- treści i autora nie można sfałszować
   \end{itemize}
-  \vspace{0.25cm}
-  \begin{block}{Trzy własności podpisu}
-    \textbf{Autentyczność} (tylko ten klucz) $\cdot$
-    \textbf{integralność} (zmieniony bajt unieważnia) $\cdot$
-    \textbf{niezaprzeczalność} (autor nie wyprze się).
-  \end{block}
+  \vspace{0.1cm}
+  \begin{center}
+    \begin{tikzpicture}[
+        every node/.style={font=\scriptsize\bfseries},
+        box/.style={
+          draw=stplred, line width=1pt,
+          fill=stplcard, text=stplwhite,
+          rounded corners=2pt,
+          minimum width=2cm, minimum height=0.65cm,
+          align=center,
+        },
+        arr/.style={-latex, draw=stplred, line width=1pt},
+        lbl/.style={font=\tiny\itshape, text=stplmuted},
+      ]
+      % strona podpisu: portfel z kluczem prywatnym
+      \node[box] (priv) {Klucz\\prywatny};
+      \draw[draw=stplred, dashed, line width=0.8pt, rounded corners=4pt]
+        ($(priv.north west)+(-0.22,0.18)$) rectangle ($(priv.south east)+(0.22,-0.18)$);
+      \node[font=\tiny\bfseries, text=stplmuted] at ($(priv.north)+(0,0.33)$) {Portfel};
+      \node[box, below=1cm of priv] (pub) {Klucz\\publiczny};
+      % para kluczy: publiczny wyprowadzony z prywatnego
+      \draw[arr] ($(priv.south)+(0,-0.18)$) -- node[lbl, right=1pt]{wyprowadza} (pub.north);
+      \node[box, right=5.2cm of priv] (sig) {Podpis};
+      \node[box, right=5.2cm of pub] (node) {Węzeł sieci\\$\checkmark$};
+      \coordinate (wr) at ($(priv.east)+(0.22,0)$);
+      % podpisanie
+      \draw[arr] (wr) -- node[lbl, above]{podpisuje} (sig.west);
+      % weryfikacja zbiega dwa wejścia: podpis + klucz publiczny
+      \draw[arr] (sig.south) -- node[lbl, right=2pt]{transakcja} (node.north);
+      \draw[arr] (pub.east) -- node[lbl, above]{klucz publiczny} (node.west);
+    \end{tikzpicture}
+  \end{center}
 \end{frame}
 
 % ================================================================
@@ -64,12 +121,18 @@
 
 % TODO: 4. Instalacja Phantom --- demo (screen-grab moment, no helper block)
 \begin{frame}{Instalacja Phantom}
-  \begin{itemize}
-    \item Zainstaluj rozszerzenie \textbf{Phantom} (Chrome, Brave lub Firefox)
-    \item Kliknij \textit{,,Create New Wallet''} --- portfel generuje parę kluczy lokalnie
-    \item Zapisz \textbf{seed phrase} --- szczegóły na kolejnym slajdzie
-    \item Ustaw hasło lokalne --- chroni tylko tę przeglądarkę, nie zastępuje seed
-  \end{itemize}
+  \begin{columns}[T]
+    \column{0.54\textwidth}
+      \begin{itemize}
+        \item Zainstaluj rozszerzenie \textbf{Phantom} (Chrome, Brave lub Firefox)
+        \item Kliknij \textit{,,Create New Wallet''} --- portfel generuje parę kluczy lokalnie
+        \item Zapisz \textbf{seed phrase} --- szczegóły na kolejnym slajdzie
+        \item Ustaw hasło lokalne --- chroni tylko tę przeglądarkę, nie zastępuje seed
+      \end{itemize}
+    \column{0.42\textwidth}
+      \centering
+      \includegraphics[width=\linewidth,height=4.8cm,keepaspectratio]{images/phantom-balance}
+  \end{columns}
 \end{frame}
 
 % TODO: 5. Seed phrase --- jedna zasada bezpieczeństwa (alertblock: kto ma seed, ma środki)
@@ -80,7 +143,38 @@
     \item Nigdy online --- bez wklejania, bez screenshotów, bez chmury
     \item Zapis offline --- kartka w sejfie lub lokalny manager haseł
   \end{itemize}
-  \vspace{0.25cm}
+  \vspace{0.15cm}
+  \begin{center}
+    \begin{tikzpicture}[
+        every node/.style={font=\scriptsize\bfseries},
+        box/.style={
+          draw=stplred, line width=1pt,
+          fill=stplcard, text=stplwhite,
+          rounded corners=2pt,
+          minimum width=2cm, minimum height=0.6cm,
+          align=center,
+        },
+        seedbox/.style={
+          draw=stplred, line width=1pt,
+          fill=stplred, text=stplwhite,
+          rounded corners=2pt,
+          minimum width=2cm, minimum height=1.2cm,
+          align=center,
+        },
+        arr/.style={-latex, draw=stplred, line width=1pt},
+        lbl/.style={font=\tiny\itshape, text=stplmuted},
+      ]
+      \node[seedbox] (seed) {Seed\\phrase};
+      \node[box, right=2.6cm of seed, yshift=0.6cm]  (k1) {Konto 1};
+      \node[box, right=2.6cm of seed]                (k2) {Konto 2};
+      \node[box, right=2.6cm of seed, yshift=-0.6cm] (k3) {Konto 3};
+      \draw[arr] (seed.east) -- (k1.west);
+      \draw[arr] (seed.east) -- (k2.west);
+      \draw[arr] (seed.east) -- (k3.west);
+      \node[lbl, above] at ($(seed.east)!0.5!(k1.west)+(0,0.35cm)$)
+        {deterministycznie};
+    \end{tikzpicture}
+  \end{center}
   \begin{alertblock}{Kto ma seed, ma środki}
     Nie istnieje procedura ,,zapomniałem''. Wycieka raz, na zawsze.
   \end{alertblock}
@@ -117,13 +211,18 @@
 
 % TODO: 7. Airdrop --- devnet faucet demo (exampleblock)
 \begin{frame}{Airdrop}
-  \begin{itemize}
-    \item Devnet pozwala \textbf{dosypać sobie} testowego SOL z faucetu
-    \item Trochę SOL jest potrzebne na opłaty transakcji i \textbf{rent} kont
-    \item Źródła --- \texttt{solana airdrop} (CLI), \texttt{faucet.solana.com}, Solana Playground
-    \item Typowo 1--2 SOL na żądanie, z dziennym limitem per adres
-  \end{itemize}
-  \vspace{0.25cm}
+  \begin{columns}[T]
+    \column{0.54\textwidth}
+      \begin{itemize}
+        \item Devnet pozwala \textbf{dosypać sobie} testowego SOL z faucetu
+        \item Trochę SOL jest potrzebne na opłaty transakcji i \textbf{rent} kont
+        \item Źródła --- \texttt{solana airdrop} (CLI), \texttt{faucet.solana.com}, Solana Playground
+        \item Typowo 1--2 SOL na żądanie, z dziennym limitem per adres
+      \end{itemize}
+    \column{0.42\textwidth}
+      \includegraphics[width=\linewidth]{images/faucet-devnet-crop}
+  \end{columns}
+  \vspace{0.05cm}
   \begin{exampleblock}{Demo --- faucet.solana.com}
     Otwórz faucet, wklej adres skopiowany z Phantom, kliknij \textit{,,Devnet''},
     sprawdź zaktualizowane saldo w portfelu.
@@ -136,17 +235,44 @@
     \item Wykonaj dowolny transfer SOL między dwoma adresami devnet
     \item Otwórz \texttt{explorer.solana.com} i przełącz sieć na \textbf{Devnet}
     \item Znajdź transakcję po podpisie skopiowanym z Phantom
-    \item Zobacz status \textit{finalized}, opłatę i listę kont biorących udział
     \item To dokładnie ten \textbf{write} z Lekcji 1 --- podpisany, opłacony, atomowy
   \end{itemize}
-  \vspace{0.25cm}
+  \vspace{0.15cm}
+  \begin{center}
+    \begin{tikzpicture}[
+        every node/.style={font=\scriptsize\bfseries},
+        box/.style={
+          draw=stplred, line width=1pt,
+          fill=stplcard, text=stplwhite,
+          rounded corners=2pt,
+          minimum width=2.2cm, minimum height=0.6cm,
+          align=center,
+        },
+        arr/.style={-latex, draw=stplred, line width=1pt},
+        lbl/.style={font=\tiny\itshape, text=stplmuted},
+      ]
+      \node[box] (wallet) {Portfel};
+      \node[box, right=2.6cm of wallet] (net) {Walidatory};
+      \node[box, right=2.6cm of net] (exp) {Explorer};
+      \draw[arr] (wallet) -- node[lbl, above]{podpisana tx} (net);
+      \draw[arr] (net) -- node[lbl, above]{finalized} (exp);
+    \end{tikzpicture}
+  \end{center}
+  \vspace{0.15cm}
   \begin{exampleblock}{Co zobaczysz w Explorerze}
-    \begin{itemize}
-      \item Podpis transakcji jako jej unikalny identyfikator
-      \item Status finalizacji i numer slotu
-      \item Opłatę sieciową oraz listę kont, które zmieniły stan
-    \end{itemize}
+    Podpis (identyfikator), status i numer slotu, opłatę sieciową
+    oraz listę kont, które zmieniły stan.
   \end{exampleblock}
+\end{frame}
+
+% TODO: 8b. Explorer --- pełnoekranowy zrzut transakcji na devnecie
+\begin{frame}{Transakcja w Explorerze}
+  \begin{center}
+    \includegraphics[width=\linewidth,height=5cm,keepaspectratio]{images/explorer-tx-devnet-crop}
+  \end{center}
+  \begin{center}
+    \textcolor{stplmuted}{\tiny explorer.solana.com · sieć: Devnet}
+  \end{center}
 \end{frame}
 
 % ================================================================

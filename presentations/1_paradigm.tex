@@ -194,8 +194,13 @@
 \section{Co się zmienia}
 
 % TODO: 5. Read vs Write --- A-vs-B opposition (no helper block)
-%       Sequential reveal: Read (overlays 1-4), then Write (overlays 5-8).
+%       Sequential reveal: Read (overlays 1-4), then Write (overlays 7-10).
 \begin{frame}{Read vs Write}
+  % Both columns open with a block, and each block self-reveals with \pause
+  % (see preamble). On a block-first frame those leading pauses push the first
+  % bullet to overlay 4, leaving three blank opening slides. Pull the pause
+  % counter back so Read's first bullet lands on overlay 1 instead.
+  \addtocounter{beamerpauses}{-3}%
   \begin{columns}
     \column{0.48\textwidth}
       \begin{block}{Read}
@@ -221,10 +226,10 @@
         \end{tikzpicture}
         \vspace{0.1cm}
         \begin{itemize}
-          \item<1-> Gratis, bez podpisu
-          \item<2-> Dowolny węzeł RPC
-          \item<3-> Odpowiedź natychmiast
-          \item<4-> Np. podgląd salda konta
+          \item<+-> Gratis, bez podpisu
+          \item<+-> Dowolny węzeł RPC
+          \item<+-> Odpowiedź natychmiast
+          \item<+-> Np. podgląd salda konta
         \end{itemize}
       \end{block}
 
@@ -247,30 +252,31 @@
             },
             arr/.style={-latex, draw=stplred, line width=0.7pt},
           ]
-          % Layout reserved from <1->; nodes hidden until Write stages.
-          \node[b, visible on=<5->] (c) {Klient};
-          \node[b, right=0.2cm of c, visible on=<5->] (r) {RPC};
-          \node[b, right=0.2cm of r, visible on=<6->] (k) {Klaster};
-          \node[bk, right=0.2cm of k, visible on=<7->] (ok) {ack};
-          % Stage 5: Klient → RPC
-          \begin{scope}[visible on=<5->]
+          % Layout reserved from the start; nodes appear with their Write
+          % bullets (Transakcja <7->, Opłata <8->, Czeka <9->).
+          \node[b, visible on=<7->] (c) {Klient};
+          \node[b, right=0.2cm of c, visible on=<7->] (r) {RPC};
+          \node[b, right=0.2cm of r, visible on=<8->] (k) {Klaster};
+          \node[bk, right=0.2cm of k, visible on=<9->] (ok) {ack};
+          % Klient → RPC (with "Transakcja")
+          \begin{scope}[visible on=<7->]
             \draw[arr] (c) -- (r);
           \end{scope}
-          % Stage 6: → Klaster
-          \begin{scope}[visible on=<6->]
+          % → Klaster (with "Opłata")
+          \begin{scope}[visible on=<8->]
             \draw[arr] (r) -- (k);
           \end{scope}
-          % Stage 7: → ack
-          \begin{scope}[visible on=<7->]
+          % → ack (with "Czeka")
+          \begin{scope}[visible on=<9->]
             \draw[arr] (k) -- (ok);
           \end{scope}
         \end{tikzpicture}
         \vspace{0.1cm}
         \begin{itemize}
-          \item<5-> \textbf{Transakcja} podpisana kluczem
-          \item<6-> Opłata sieciowa za włączenie
-          \item<7-> Czeka na potwierdzenie klastra
-          \item<8-> Np. wysłanie tokena
+          \item<+-> \textbf{Transakcja} podpisana kluczem
+          \item<+-> Opłata sieciowa za włączenie
+          \item<+-> Czeka na potwierdzenie klastra
+          \item<+-> Np. wysłanie tokena
         \end{itemize}
       \end{alertblock}
   \end{columns}

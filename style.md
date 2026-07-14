@@ -269,9 +269,20 @@ writing on Discord use the English term? If yes, keep it English.
 
 - Short identifiers, commands, filenames: `\texttt{cargo build}`,
   `\texttt{solana-cli}`.
-- Multi-line snippets: use the `listings` or `minted` package inside a
-  `\begin{block}` titled with the file or context. Keep snippets under
-  ~10 lines — anything longer needs to be split or shown live, not on a slide.
+- Multi-line snippets: use the `listings` package inside a `\begin{block}`
+  titled with the file or context. Keep snippets under ~10 lines — anything
+  longer needs to be split or shown live, not on a slide.
+- **Revealing code in step with bullets**: when a snippet's fragments map to
+  the bullets above it, reveal each fragment on its bullet's overlay. Use the
+  `codeblock` card + `\begin{lstlisting}[style=reveal]` and tag lines with
+  `(*@\onslide<k->@*)` (see `branding.md` → Code reveal card). Do **not** use
+  `\pause` inside a normal titled `block` listing — its auto-`\pause` desyncs
+  the code from the bullets and the per-line background goes ragged.
+  - No 1:1 mapping? A fragment appears only on the bullet that names it;
+    bullets without a matching line reveal nothing new. Structural scaffolding
+    (struct headers, braces) rides on overlay 1 for context.
+  - No bullets on the frame (code-only): plain `\begin{lstlisting}` with
+    `\pause` between chunks is fine — the card just grows.
 - Theory lessons should not need code. If a theory slide reaches for code,
   consider whether the explanation needs an analogy instead.
 

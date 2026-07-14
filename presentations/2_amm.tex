@@ -66,6 +66,11 @@
 \section{AMM --- Automated Market Maker}
 
 \begin{frame}{Order book vs AMM}
+  % Both columns open with a block that self-reveals via \pause (see preamble).
+  % On a block-first frame those leading pauses push the first bullet to overlay
+  % 4, leaving three blank opening slides. Pull the pause counter back so the
+  % first bullet lands on overlay 1 instead.
+  \addtocounter{beamerpauses}{-3}%
   \begin{columns}
     \column{0.48\textwidth}
       \begin{block}{Order Book (CEX)}
@@ -182,6 +187,10 @@
 \end{frame}
 
 \begin{frame}{Ryzyka w AMM}
+  % The frame's only content is this block, which self-reveals via \pause (see
+  % preamble), leaving a blank opening slide. Pull the pause counter back so the
+  % block and its first bullet land on overlay 1.
+  \addtocounter{beamerpauses}{-1}%
   \begin{alertblock}{Ryzyka, o których warto pamiętać}
     \begin{itemize}
       \item \textbf{Impermanent Loss} --- przy zmiennych cenach względem wejścia

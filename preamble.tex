@@ -1,4 +1,4 @@
-\documentclass{beamer}
+\documentclass[aspectratio=169]{beamer}
 
 \usepackage{Archivo}
 \renewcommand{\sfdefault}{\rmdefault}
@@ -154,7 +154,18 @@
   aboveskip=0.4em,
   belowskip=0.2em,
   language=Rust,
+  escapeinside={(*@}{@*)},
 }
+
+%% ---- Code reveal card (line-synced to bullets) ----
+%% A block-styled card WITHOUT the block's auto-\pause, so it is visible from
+%% the current overlay and its code lines can reveal in step with the itemize
+%% bullets via (*@\onslide<k->@*) markers. The listing drops its own
+%% background/frame (style=reveal) so the solid card shows through instead of
+%% the per-line background going ragged as lines are covered.
+\newtcolorbox{codeblock}[1]{stplbase, colframe=stplred, title={#1}}
+\lstdefinestyle{reveal}{backgroundcolor={}, frame=none, xleftmargin=0pt,
+  aboveskip=0pt, belowskip=0pt}
 
 %% ---- Table of contents ----
 \setbeamercolor{section in toc}{fg=stplwhite}

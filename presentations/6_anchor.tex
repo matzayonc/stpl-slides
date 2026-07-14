@@ -25,7 +25,7 @@
     \item Frontend pokazuje przycisk ,,wymień'' --- klik i coś leci do sieci
     \item Z Lekcji 1: read jest gratis, write wymaga czegoś więcej
     \item Węzeł nie ufa frontendowi --- musi sam sprawdzić każdy bajt
-    \item Pytanie nie brzmi ,,co'' --- brzmi ,,w jakiej formie''
+    \item Akcję trzeba opakować tak, by węzeł mógł sprawdzić autoryzację
   \end{itemize}
   \vspace{0.25cm}
   \begin{alertblock}{Pytanie}
@@ -118,18 +118,18 @@
     \item Pierwszy argument zawsze \texttt{\textbf{Context<T>}} --- konta + meta
     \item Zwracany typ to \texttt{Result<()>} --- sukces lub błąd Anchora
   \end{itemize}
-  \begin{block}{Szkielet instrukcji}
-\begin{lstlisting}
-#[program]
-pub mod licznik {
-    use super::*;
-    pub fn increment(ctx: Context<Increment>) -> Result<()> {
-        ctx.accounts.counter.value += 1;
-        Ok(())
-    }
-}
+  \begin{codeblock}{Szkielet instrukcji}
+\begin{lstlisting}[style=reveal]
+(*@\onslide<1->@*)#[program]
+(*@\onslide<1->@*)pub mod licznik {
+(*@\onslide<1->@*)    use super::*;
+(*@\onslide<2->@*)    pub fn increment(ctx: Context<Increment>) -> Result<()> {
+(*@\onslide<3->@*)        ctx.accounts.counter.value += 1;
+(*@\onslide<4->@*)        Ok(())
+(*@\onslide<2->@*)    }
+(*@\onslide<1->@*)}
 \end{lstlisting}
-  \end{block}
+  \end{codeblock}
 \end{frame}
 
 % 8. #[derive(Accounts)] --- deklaratywne bezpieczeństwo (exampleblock)
@@ -155,19 +155,19 @@ pub mod licznik {
     \item \textbf{seeds} --- adres wyliczony deterministycznie (PDA)
     \item \textbf{has\_one} --- pole konta musi pasować do innego konta
   \end{itemize}
-  \begin{block}{Struktura kont dla \texttt{deposit}}
-\begin{lstlisting}
-#[account]
-pub struct Vault { pub owner: Pubkey, pub balance: u64 }
-#[derive(Accounts)]
-pub struct Deposit<'info> {
-    #[account(mut, has_one = owner)] // vault.owner==owner.key
-    pub vault: Account<'info, Vault>,
-    #[account(mut)]
-    pub owner: Signer<'info>,
-}
+  \begin{codeblock}{Struktura kont dla \texttt{deposit}}
+\begin{lstlisting}[style=reveal]
+(*@\onslide<1->@*)#[account]
+(*@\onslide<1->@*)pub struct Vault { pub owner: Pubkey, pub balance: u64 }
+(*@\onslide<1->@*)#[derive(Accounts)]
+(*@\onslide<1->@*)pub struct Deposit<'info> {
+(*@\onslide<2->@*)    #[account(mut, has_one = owner)] // vault.owner==owner.key
+(*@\onslide<2->@*)    pub vault: Account<'info, Vault>,
+(*@\onslide<2->@*)    #[account(mut)]
+(*@\onslide<3->@*)    pub owner: Signer<'info>,
+(*@\onslide<1->@*)}
 \end{lstlisting}
-  \end{block}
+  \end{codeblock}
 \end{frame}
 
 % 10. Serializacja --- Borsh za ciebie (exampleblock)
@@ -219,20 +219,16 @@ pub struct Deposit<'info> {
 % 13. Mini-program --- code IS the slide (no helper block)
 \begin{frame}[fragile]{Mini-program}
 \begin{lstlisting}
-declare_id!("Lic1111111111111111111111111111111111111111");
+declare_id!("Lic1111111111111111111111111111111111111111");(*@\pause@*)
 
 #[program]
 pub mod licznik {
     use super::*;
-    pub fn init(ctx: Context<Init>) -> Result<()> {
-        ctx.accounts.counter.value = 0;
+    pub fn init(ctx: Context<Init>, value: u64) -> Result<()> {
+        ctx.accounts.counter.value = value;
         Ok(())
     }
-    pub fn increment(ctx: Context<Inc>) -> Result<()> {
-        ctx.accounts.counter.value += 1;
-        Ok(())
-    }
-}
+}(*@\pause@*)
 
 #[derive(Accounts)]
 pub struct Init<'info> {
@@ -240,13 +236,7 @@ pub struct Init<'info> {
     pub counter: Account<'info, Counter>,
     #[account(mut)] pub user: Signer<'info>,
     pub system_program: Program<'info, System>,
-}
-
-#[derive(Accounts)]
-pub struct Inc<'info> {
-    #[account(mut)] pub counter: Account<'info, Counter>,
-}
-
+}(*@\pause@*)
 #[account]
 pub struct Counter { pub value: u64 }
 \end{lstlisting}
@@ -257,6 +247,10 @@ pub struct Counter { pub value: u64 }
 
 % 14. Podsumowanie --- recap (no helper block per §4.3)
 \begin{frame}{Podsumowanie}
+  % Frame opens with a block, whose leading \pause (see preamble) would push
+  % the first block to overlay 2 and show a blank opening slide. Pull the pause
+  % counter back so the block lands on overlay 1 instead.
+  \addtocounter{beamerpauses}{-1}%
   \begin{block}{Co Anchor robi za ciebie}
     \begin{itemize}
       \item Walidacja kont przed ciałem instrukcji
